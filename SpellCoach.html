@@ -400,6 +400,7 @@ function normalizeDoc(raw){
   return {app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:normalizeData(o.current), versions};
 }
 const isFresh = doc => doc.versions.length === 0 && Object.keys(doc.current.sets).length === 0;
+const hasProgress = data => Object.values(data?.sets || {}).some(r => r.studied.length || r.quizzes.length);
 
 /* ================= progress math ================= */
 function passDays(rec){ return (rec?.quizzes||[]).filter(q=>q.score>=PASS_SCORE).map(q=>dayKey(q.date)).sort(); }
@@ -524,7 +525,16 @@ function parseJsonBinId(value){
 }
 function normalizeJsonBinDoc(raw){
   const o = typeof raw === 'string' ? JSON.parse(raw) : raw;
-  try { return {doc:normalizeDoc(o), recovered:false}; }
+  try {
+    const doc = normalizeDoc(o);
+    if (!hasProgress(doc.current)){
+      const recovered = doc.versions.filter(hasProgress).sort((a,b)=>Date.parse(b.savedAt)-Date.parse(a.savedAt))[0];
+      if (recovered){
+        return {doc:{...doc, current:recovered, versions:[doc.current, ...doc.versions.filter(v=>v!==recovered)].slice(0, MAX_VERSIONS)}, recovered:true};
+      }
+    }
+    return {doc, recovered:false};
+  }
   catch (e){
     if (!o || !APP_IDS.includes(o.app) || !o.current || (o.schemaVersion||1) > SCHEMA_VERSION) throw e;
     const versions = [];
@@ -532,7 +542,9 @@ function normalizeJsonBinDoc(raw){
       try { versions.push(normalizeData(version)); } catch {}
     }
     if (!versions.length) throw e;
-    return {doc:{app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:versions[0], versions:versions.slice(1, MAX_VERSIONS + 1)}, recovered:true};
+    versions.sort((a,b)=>Date.parse(b.savedAt)-Date.parse(a.savedAt));
+    const recovered = versions.find(hasProgress) || versions[0];
+    return {doc:{app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:recovered, versions:[...versions.filter(v=>v!==recovered)].slice(0, MAX_VERSIONS)}, recovered:true};
   }
 }
 async function jsonBinRequest(method, doc){
@@ -563,6 +575,13 @@ function mergeJsonBinDocs(primary, secondary){
   }
   return {...primary, versions:versions.slice(0, MAX_VERSIONS)};
 }
+function chooseJsonBinPrimary(remote, local){
+  const remoteHasProgress = hasProgress(remote.current), localHasProgress = hasProgress(local.current);
+  if (remoteHasProgress !== localHasProgress) return remoteHasProgress ? remote : local;
+  if (isFresh(remote) && !isFresh(local)) return local;
+  if (isFresh(local) && !isFresh(remote)) return remote;
+  return Date.parse(remote.current.savedAt) > Date.parse(local.current.savedAt) ? remote : local;
+}
 async function syncJsonBin(){
   if (!S.meta.jsonBinId) throw new Error('Connect a JSONBin bin first.');
   S.remoteSyncReady = false;
@@ -570,10 +589,7 @@ async function syncJsonBin(){
     const remoteResult = await jsonBinRequest('GET');
     const remote = remoteResult.doc;
     const local = S.doc;
-    let primary;
-    if (isFresh(remote) && !isFresh(local)) primary = local;
-    else if (isFresh(local) && !isFresh(remote)) primary = remote;
-    else primary = Date.parse(remote.current.savedAt) > Date.parse(local.current.savedAt) ? remote : local;
+    const primary = chooseJsonBinPrimary(remote, local);
     const merged = mergeJsonBinDocs(primary, primary === remote ? local : remote);
     const changed = remoteResult.recovered || JSON.stringify(merged) !== JSON.stringify(remote);
     S.doc = merged;
@@ -1429,6 +1445,13 @@ async function selfTest(){
     brokenBin.versions = [clone(D()), ...brokenBin.versions];
     const recoveredBin = normalizeJsonBinDoc(brokenBin);
     ok(recoveredBin.recovered && JSON.stringify(recoveredBin.doc.current.sets) === JSON.stringify(D().sets), 'JSONBin recovers a malformed latest version from history');
+    const emptyCurrent = normalizeData({...newData(), savedAt:'2026-11-06T22:52:48.685Z'});
+    const oldProgress = normalizeData({...clone(D()), savedAt:'2026-11-06T22:24:37.721Z', player:{...D().player, theme:'chess'}});
+    const newerProgress = normalizeData({...clone(D()), savedAt:'2026-11-06T22:30:00.000Z'});
+    const emptyLatest = normalizeJsonBinDoc({app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:emptyCurrent, versions:[oldProgress,newerProgress]});
+    ok(emptyLatest.recovered && emptyLatest.doc.current.savedAt === newerProgress.savedAt && hasProgress(emptyLatest.doc.current), 'JSONBin recovers newest progress when latest save is empty');
+    const emptyLocal = {app:'SpellCoach',schemaVersion:SCHEMA_VERSION,current:emptyCurrent,versions:[emptyCurrent]};
+    ok(chooseJsonBinPrimary(emptyLatest.doc,emptyLocal) === emptyLatest.doc, 'progress-bearing JSONBin save wins over newer empty local save');
     ok(normalizeDoc({...clone(S.doc), app:'BrickQuest'}).app === 'SpellCoach', 'accepts save files from before the rename');
     let rej = false; try { normalizeDoc('{"x":1}'); } catch { rej = true; } ok(rej, 'rejects non-save file');
     rej = false; try { normalizeDoc(JSON.stringify({...S.doc, schemaVersion:99})); } catch { rej = true; } ok(rej, 'rejects newer schema');
