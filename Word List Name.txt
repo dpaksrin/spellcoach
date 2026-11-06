@@ -1,0 +1,462 @@
+Word List Name
+2026 Spelling Words_Set_01_2026-1B1
+2026 Spelling Words_Set_02_2026-1B2
+2026 Spelling Words_Set_03_2026-2B1
+2026 Spelling Words_Set_04_2026-2B2
+2026 Spelling Words_Set_05_2026-2B3
+2026 Spelling Words_Set_06_2026-2B4
+2026 Spelling Words_Set_07_2026-3B1
+2026 Spelling Words_Set_08_2026-3B2
+2026 Spelling Words_Set_09_2026 School
+Custom_Set_01_PNSB
+Custom_Set_02_MostMis
+Custom_Set_03_woirds1
+Custom_Set_04_prelims
+Custom_Set_05_sasbvd
+Custom_Set_06_sasbD
+Custom_Set_07_sasbMed
+Custom_Set_08_NS26Fin
+Custom_Set_09_NS26F2
+Geographical Words Module_Set_01
+Geographical Words Module_Set_02
+Geographical Words Module_Set_03
+Geographical Words Module_Set_04
+Geographical Words Module_Set_05
+Geographical Words Module_Set_06
+Geographical Words Module_Set_07
+Geographical Words Module_Set_08
+Geographical Words Module_Set_09
+Geographical Words Module_Set_10
+Geographical Words Module_Set_11
+Geographical Words Module_Set_12
+Geographical Words Module_Set_13
+Geographical Words Module_Set_14
+Geographical Words Module_Set_15
+Geographical Words Module_Set_16
+Geographical Words Module_Set_17
+Geographical Words Module_Set_18
+Geographical Words Module_Set_19
+Geographical Words Module_Set_20
+Geographical Words Module_Set_21
+Geographical Words Module_Set_22
+MasterSpellingWords
+Past National Scripps Words_Module 2631 Words_Set_01_Set 1
+Past National Scripps Words_Module 2631 Words_Set_02_Set 2
+Past National Scripps Words_Module 2631 Words_Set_03_Set 3
+Past National Scripps Words_Module 2631 Words_Set_04_Set 4
+Past National Scripps Words_Module 2631 Words_Set_05_Set 5
+Past National Scripps Words_Module 2631 Words_Set_06_Set 6
+Past National Scripps Words_Module 2631 Words_Set_07_Set 7
+Past National Scripps Words_Module 2631 Words_Set_08_Set 8
+Past National Scripps Words_Module 2631 Words_Set_09_Set 9
+Past National Scripps Words_Module 2631 Words_Set_10_Set 10
+Past National Scripps Words_Module 2631 Words_Set_11_Set 11
+Past National Scripps Words_Module 2631 Words_Set_12_Set 12
+Past National Scripps Words_Module 2631 Words_Set_13_Set 13
+Past National Scripps Words_Module 2631 Words_Set_14_Set 14
+Past National Scripps Words_Module 2631 Words_Set_15_Set 15
+Past National Scripps Words_Module 2631 Words_Set_16_Set 16
+Past National Scripps Words_Module 2631 Words_Set_17_Set 17
+Past National Scripps Words_Module 2631 Words_Set_18_Set 18
+Past National Scripps Words_Module 2631 Words_Set_19_Set 19
+Past National Scripps Words_Module 2631 Words_Set_20_Set 20
+Past National Scripps Words_Module 2631 Words_Set_21_Set 21
+Past National Scripps Words_Module 2631 Words_Set_22_Set 22
+Past National Scripps Words_Module 2631 Words_Set_23_Set 23
+Past National Scripps Words_Module 2631 Words_Set_24_Set 24
+Past National Scripps Words_Module 2631 Words_Set_25_Set 25
+Past National Scripps Words_Module 2631 Words_Set_26_Set 26
+Past National Scripps Words_Module 2631 Words_Set_27_Set 27
+Past National Scripps Words_Module 2631 Words_Set_28_Set 28
+Past National Scripps Words_Module 2631 Words_Set_29_Set 29
+Past National Scripps Words_Module 2631 Words_Set_30_Set 30
+Past National Scripps Words_Module 2631 Words_Set_31_Set 31
+Past National Scripps Words_Module 2631 Words_Set_32_Set 32
+Past National Scripps Words_Module 2631 words_set_33_set 33
+Past National Scripps Words_Module 2631 words_set_34_set 34
+Past SASB Finals Words_Set_2009
+Past SASB Finals Words_Set_2010
+Past SASB Finals Words_Set_2011
+Past SASB Finals Words_Set_2012
+Past SASB Finals Words_Set_2013
+Past SASB Finals Words_Set_2014
+Past SASB Finals Words_Set_2015
+Past SASB Finals Words_Set_2016
+Past SASB Finals Words_Set_2017
+Past SASB Finals Words_Set_2018
+Past SASB Finals Words_Set_2019
+Past SASB Finals Words_Set_2020
+Past SASB Finals Words_Set_2021
+Past SASB Finals Words_Set_2022
+Past SASB Finals Words_Set_2023
+Past SASB Finals Words_Set_2024
+Past Scripps District-county Spelling Words_Set_01_2020
+Past Scripps District-county Spelling Words_Set_02_2019
+Past Scripps District-county Spelling Words_Set_03_2018
+Past Scripps District-county Spelling Words_Set_04_2017
+Past Scripps District-county Spelling Words_Set_05_2016
+Past Scripps District-county Spelling Words_Set_06_2015
+Past Scripps District-county Spelling Words_Set_07_2014
+Past Scripps District-county Spelling Words_Set_08_2013
+Past Scripps District-county Spelling Words_Set_09_2024-1B Removed
+Past Scripps District-county Spelling Words_Set_10_2024-2B Removed
+Past Scripps District-county Spelling Words_Set_11_2024-3B Removed
+Past Scripps District-county Spelling Words_Set_12_2023-1B Removed
+Past Scripps District-county Spelling Words_Set_13_2023-2B Removed
+Past Scripps District-county Spelling Words_Set_14_2023-3B Removed
+Past Scripps District-county Spelling Words_Set_15_2022-1B Removed
+Past Scripps District-county Spelling Words_Set_16_2022-2B Removed
+Past Scripps District-county Spelling Words_Set_17_2022-3B Removed
+Past Scripps District-county Spelling Words_Set_18_2021-1B Removed
+Past Scripps District-county Spelling Words_Set_19_2021-2B Removed
+Past Scripps District-county Spelling Words_Set_20_2021-3B Removed
+Past Scripps District-county Spelling Words_Set_21_2020-1B Removed
+Past Scripps District-county Spelling Words_Set_22_2020-2B Removed
+Past Scripps District-county Spelling Words_Set_23_2020-3B Removed
+Past Scripps Regional Words_Set_01_2021
+Past Scripps Regional Words_Set_02_2020
+Past Scripps Regional Words_Set_03_2019
+Past Scripps Regional Words_Set_04_2018
+Past Scripps Regional Words_Set_05_2017
+Past Scripps Regional Words_Set_06_2016
+Past Scripps Regional Words_Set_07_2015
+Past Scripps Regional Words_Set_08_2014
+Past Scripps Regional Words_Set_09_2013
+Past Scripps Regional Words_Set_10_2012
+Past Scripps Regional Words_Set_11_2011
+Past Scripps Regional Words_Set_12_2010
+Past Scripps Regional Words_Set_13_2009
+Past Scripps School Words_Set_01_2025 SCH
+Past Scripps School Words_Set_02_2024 SCH
+Past Scripps School Words_Set_03_2023 Off List
+Past Scripps School Words_Set_04_2023
+Past Scripps School Words_Set_05_2022
+Past Scripps School Words_Set_06_2021
+Past Scripps School Words_Set_07_2020
+Past Scripps School Words_Set_08_2019
+Past Scripps School Words_Set_09_2018
+Past Scripps School Words_Set_10_2017
+Past Scripps School Words_Set_11_2016
+Past Scripps School Words_Set_12_2015
+Past Scripps School Words_Set_13_2014
+Past Scripps School Words_Set_14_2013
+Past Scripps School Words_Set_15_2012
+Past Scripps School Words_Set_16_2011
+Past SNSB Words_Set_01_2026
+Past SNSB Words_Set_02_2025
+Past SNSB Words_Set_03_2024
+Past SNSB Words_Set_04_2023
+Past SNSB Words_Set_05_2022
+Past SNSB Words_Set_06_2021
+Past SNSB Words_Set_07_2021
+Past SNSB Words_Set_08_2019
+Past SNSB Words_Set_09_2019
+Past SNSB Words_Set_10_2018A
+Past SNSB Words_Set_11_2018B
+Past SNSB Words_Set_12_2017
+Past SNSB Words_Set_13_2016
+Past SNSB Words_Set_14_2015
+Past SNSB Words_Set_15_2014
+Past SNSB Words_Set_16_2013
+Past SNSB Words_Set_17_2012
+Past SNSB Words_Set_18_2011
+Past SNSB Words_Set_19_2010
+Past SNSB Words_Set_20_2009
+Popular National Words - Set 01
+Popular National Words - Set 02
+Popular National Words - Set 03
+Popular National Words - Set 04
+Popular National Words - Set 05
+Popular National Words_Set_06
+Popular National Words_Set_07
+Popular National Words_Set_08
+Popular National Words_Set_09
+Popular National Words_Set_10
+Popular National Words_Set_11
+Popular National Words_Set_12
+Popular National Words_Set_13
+Popular National Words_Set_14
+Popular National Words_Set_15
+Popular National Words_Set_16
+Popular National Words_Set_17
+Popular National Words_Set_18
+Popular National Words_Set_19
+Popular National Words_Set_20
+Popular National Words_Set_21
+Popular National Words_Set_22
+Popular National Words_Set_23
+Popular National Words_Set_24
+Scientific Words Module_Set_01
+Scientific Words Module_Set_02
+Spelling Word List 1_Set_01
+Spelling Word List 1_Set_02
+Spelling Word List 1_Set_03
+Spelling Word List 1_Set_04
+Spelling Word List 1_Set_05
+Spelling Word List 1_Set_06
+Spelling Word List 1_Set_07
+Spelling Word List 1_Set_08
+Spelling Word List 1_Set_09
+Spelling Word List 1_Set_10
+Spelling Word List 1_Set_11
+Spelling Word List 1_Set_12
+Spelling Word List 1_Set_13
+Spelling Word List 1_Set_14
+Spelling Word List 1_Set_15
+Spelling Word List 1_Set_16
+Spelling Word List 1_Set_17
+Spelling Word List 10 - Set 01
+Spelling Word List 10 - Set 02
+Spelling Word List 10 - Set 03
+Spelling Word List 10 - Set 04
+Spelling Word List 10 - Set 05
+Spelling Word List 10 - Set 06
+Spelling Word List 10 - Set 07
+Spelling Word List 10 - Set 08
+Spelling Word List 10 - Set 09
+Spelling Word List 10 - Set 10
+Spelling Word List 10 - Set 11
+Spelling Word List 10 - Set 12
+Spelling Word List 10 - Set 13
+Spelling Word List 10 - Set 14
+Spelling Word List 10 - Set 15
+Spelling Word List 10 - Set 16
+Spelling Word List 10 - Set 17
+Spelling Word List 10 - Set 18
+Spelling Word List 10 - Set 19
+Spelling Word List 10 - Set 20
+Spelling Word List 10 - Set 21
+Spelling Word List 10 - Set 22
+Spelling Word List 10 - Set 23
+Spelling Word List 10 - Set 24
+Spelling Word List 10 - Set 25
+Spelling Word List 10 - Set 26
+Spelling Word List 10 - Set 27
+Spelling Word List 10 - Set 28
+Spelling Word List 10 - Set 29
+Spelling Word List 10 - Set 30
+Spelling Word List 2_Set_01
+Spelling Word List 2_Set_02
+Spelling Word List 2_Set_03
+Spelling Word List 2_Set_04
+Spelling Word List 2_Set_05
+Spelling Word List 2_Set_06
+Spelling Word List 2_Set_07
+Spelling Word List 2_Set_08
+Spelling Word List 2_Set_09
+Spelling Word List 2_Set_10
+Spelling Word List 2_Set_11
+Spelling Word List 2_Set_12
+Spelling Word List 2_Set_13
+Spelling Word List 2_Set_14
+Spelling Word List 2_Set_15
+Spelling Word List 2_Set_16
+Spelling Word List 2_Set_17
+Spelling Word List 2_Set_18
+Spelling Word List 2_Set_19
+Spelling Word List 2_Set_20
+Spelling Word List 2_Set_21
+Spelling Word List 2_Set_22
+Spelling Word List 2_Set_23
+Spelling Word List 2_Set_24
+Spelling Word List 2_Set_25
+Spelling Word List 3 - Set 01
+Spelling Word List 3 - Set 02
+Spelling Word List 3 - Set 03
+Spelling Word List 3 - Set 04
+Spelling Word List 3 - Set 05
+Spelling Word List 3 - Set 06
+Spelling Word List 3 - Set 07
+Spelling Word List 3 - Set 08
+Spelling Word List 3 - Set 09
+Spelling Word List 3 - Set 10
+Spelling Word List 3 - Set 11
+Spelling Word List 3 - Set 12
+Spelling Word List 3 - Set 13
+Spelling Word List 3 - Set 14
+Spelling Word List 3 - Set 15
+Spelling Word List 3 - Set 16
+Spelling Word List 3 - Set 17
+Spelling Word List 3 - Set 18
+Spelling Word List 3 - Set 19
+Spelling Word List 3 - Set 20
+Spelling Word List 3 - Set 21
+Spelling Word List 3 - Set 22
+Spelling Word List 3 - Set 23
+Spelling Word List 4 - Set 01
+Spelling Word List 4 - Set 02
+Spelling Word List 4 - Set 03
+Spelling Word List 4 - Set 04
+Spelling Word List 4 - Set 05
+Spelling Word List 4 - Set 06
+Spelling Word List 4 - Set 07
+Spelling Word List 4 - Set 08
+Spelling Word List 4 - Set 09
+Spelling Word List 4 - Set 10
+Spelling Word List 4 - Set 11
+Spelling Word List 4 - Set 12
+Spelling Word List 4 - Set 13
+Spelling Word List 4 - Set 14
+Spelling Word List 4 - Set 15
+Spelling Word List 4 - Set 16
+Spelling Word List 4 - Set 17
+Spelling Word List 4 - Set 18
+Spelling Word List 4 - Set 19
+Spelling Word List 4 - Set 20
+Spelling Word List 4 - Set 21
+Spelling Word List 4 - Set 22
+Spelling Word List 4 - Set 23
+Spelling Word List 4 - Set 24
+Spelling Word List 4 - Set 25
+Spelling Word List 5 - Set 01
+Spelling Word List 5 - Set 02
+Spelling Word List 5 - Set 03
+Spelling Word List 5 - Set 04
+Spelling Word List 5 - Set 05
+Spelling Word List 5 - Set 06
+Spelling Word List 5 - Set 07
+Spelling Word List 5 - Set 08
+Spelling Word List 5 - Set 09
+Spelling Word List 5 - Set 10
+Spelling Word List 5 - Set 11
+Spelling Word List 5 - Set 12
+Spelling Word List 5 - Set 13
+Spelling Word List 5 - Set 14
+Spelling Word List 5 - Set 15
+Spelling Word List 5 - Set 16
+Spelling Word List 5 - Set 17
+Spelling Word List 5 - Set 18
+Spelling Word List 5 - Set 19
+Spelling Word List 5 - Set 20
+Spelling Word List 5 - Set 21
+Spelling Word List 5 - Set 22
+Spelling Word List 5 - Set 23
+Spelling Word List 5 - Set 24
+Spelling Word List 5 - Set 25
+Spelling Word List 5 - Set 26
+Spelling Word List 5 - Set 27
+Spelling Word List 5 - Set 28
+Spelling Word List 5 - Set 29
+Spelling Word List 5 - Set 30
+Spelling Word List 5 - Set 31
+Spelling Word List 6 - Set 01
+Spelling Word List 6 - Set 02
+Spelling Word List 6 - Set 03
+Spelling Word List 6 - Set 04
+Spelling Word List 6 - Set 05
+Spelling Word List 6 - Set 06
+Spelling Word List 6 - Set 07
+Spelling Word List 6 - Set 08
+Spelling Word List 6 - Set 09
+Spelling Word List 6 - Set 10
+Spelling Word List 6 - Set 11
+Spelling Word List 6 - Set 12
+Spelling Word List 6 - Set 13
+Spelling Word List 6 - Set 14
+Spelling Word List 6 - Set 15
+Spelling Word List 6 - Set 16
+Spelling Word List 6 - Set 17
+Spelling Word List 6 - Set 18
+Spelling Word List 6 - Set 19
+Spelling Word List 6 - Set 20
+Spelling Word List 6 - Set 21
+Spelling Word List 6_Set_22
+Spelling Word List 6_Set_23
+Spelling Word List 6_Set_24
+Spelling Word List 6_Set_25
+Spelling Word List 6_Set_26
+Spelling Word List 6_Set_27
+Spelling Word List 6_Set_28
+Spelling Word List 6_Set_29
+Spelling Word List 6_Set_30
+Spelling Word List 7 - Set 01
+Spelling Word List 7 - Set 02
+Spelling Word List 7 - Set 03
+Spelling Word List 7 - Set 04
+Spelling Word List 7 - Set 05
+Spelling Word List 7 - Set 06
+Spelling Word List 7 - Set 07
+Spelling Word List 7 - Set 08
+Spelling Word List 7 - Set 09
+Spelling Word List 7 - Set 10
+Spelling Word List 7 - Set 11
+Spelling Word List 7 - Set 12
+Spelling Word List 7 - Set 13
+Spelling Word List 7 - Set 14
+Spelling Word List 7 - Set 15
+Spelling Word List 7 - Set 16
+Spelling Word List 7 - Set 17
+Spelling Word List 7 - Set 18
+Spelling Word List 7 - Set 19
+Spelling Word List 7 - Set 20
+Spelling Word List 7 - Set 21
+Spelling Word List 7 - Set 22
+Spelling Word List 7 - Set 23
+Spelling Word List 7 - Set 24
+Spelling Word List 7 - Set 25
+Spelling Word List 8 - Set 01
+Spelling Word List 8 - Set 02
+Spelling Word List 8 - Set 03
+Spelling Word List 8 - Set 04
+Spelling Word List 8 - Set 05
+Spelling Word List 8 - Set 06
+Spelling Word List 8 - Set 07
+Spelling Word List 8 - Set 08
+Spelling Word List 8 - Set 09
+Spelling Word List 8 - Set 10
+Spelling Word List 8 - Set 11
+Spelling Word List 8 - Set 12
+Spelling Word List 8 - Set 13
+Spelling Word List 8 - Set 14
+Spelling Word List 8 - Set 15
+Spelling Word List 8 - Set 16
+Spelling Word List 8 - Set 17
+Spelling Word List 8 - Set 18
+Spelling Word List 8 - Set 19
+Spelling Word List 8 - Set 20
+Spelling Word List 8 - Set 21
+Spelling Word List 8 - Set 22
+Spelling Word List 8 - Set 23
+Spelling Word List 8 - Set 24
+Spelling Word List 9 - Set 01
+Spelling Word List 9 - Set 02
+Spelling Word List 9 - Set 03
+Spelling Word List 9 - Set 04
+Spelling Word List 9 - Set 05
+Spelling Word List 9 - Set 06
+Spelling Word List 9 - Set 07
+Spelling Word List 9 - Set 08
+Spelling Word List 9 - Set 09
+Spelling Word List 9 - Set 10
+Spelling Word List 9 - Set 11
+Spelling Word List 9 - Set 12
+Spelling Word List 9 - Set 13
+Spelling Word List 9 - Set 14
+Spelling Word List 9 - Set 15
+Spelling Word List 9 - Set 16
+Spelling Word List 9 - Set 17
+Spelling Word List 9 - Set 18
+Spelling Word List 9 - Set 19
+Spelling Word List 9 - Set 20
+Spelling Word List 9 - Set 21
+Spelling Word List 9 - Set 22
+Spelling Word List 9 - Set 23
+Spelling Word List 9 - Set 24
+Spelling Word List 9 - Set 25
+Spelling Word List 9 - Set 26
+Spelling Word List 9 - Set 27
+Spelling Word List 9 - Set 28
+Spelling Word List 9 - Set 29
+Spelling Word List 9 - Set 30
+Spelling Word List 9 - Set 31
+Spelling Word List 9 - Set 32
+Latin Roots
+Greek  Roots
+New Latin  Roots
+New Latin  Roots 2
+Middle English  Roots
+French Roots
+Int. Sci. Vocab  Roots
+Others Roots
+Intermediate Coaching - HW-Week2
+Intermediate Coaching - HW- Week7

@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="en" data-mode="day" data-theme="city">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SpellCoach">
+<meta name="theme-color" content="#0055BF">
+<title>SpellCoach</title>
+<style>
+:root{--font:ui-rounded,"SF Pro Rounded","Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;--main:#0055BF;--main-text:#fff;--accent:#F2CD37;--accent-text:#1B2A34;--gold:#F5C518}
+[data-mode=day]{--bg:#EAF1FB;--bg2:#D3E2F7;--surface:#fff;--surface2:#EEF2F8;--text:#1B2A34;--muted:#5D6B7A;--line:rgba(27,42,52,.09);--shadow:0 12px 32px rgba(27,42,52,.12);--empty:#CBD3DD;--empty-text:#5D6B7A}
+[data-mode=night]{--bg:#0B1222;--bg2:#18233F;--surface:#18213A;--surface2:#232E4B;--text:#F1F5FB;--muted:#9FB0C8;--line:rgba(255,255,255,.08);--shadow:0 12px 34px rgba(0,0,0,.45);--empty:#2C3858;--empty-text:#9FB0C8}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--font);color:var(--text);background:radial-gradient(1400px 700px at 50% -15%,var(--bg2),var(--bg)) fixed;background-color:var(--bg);-webkit-tap-highlight-color:transparent;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+h1,h2,h3{margin:0;font-weight:900;letter-spacing:-.3px}
+#scenery{position:fixed;left:0;right:0;bottom:0;height:46vh;pointer-events:none;z-index:0;opacity:.6}
+#scenery svg{width:100%;height:100%;display:block}
+.sc1{fill:var(--scene1)}.sc2{fill:var(--scene2)}.sc3{fill:var(--scene3)}.sc4{fill:var(--scene4)}.scw{fill:var(--scenew)}
+#app{position:relative;z-index:1;min-height:100vh;padding-bottom:120px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;padding-top:10px;padding-bottom:10px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px}
+.logo .lb{display:flex;gap:3px}
+.logo .lb i{width:14px;height:20px;border-radius:3px;display:block;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.chips{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-weight:900;font-size:15px;box-shadow:0 3px 10px rgba(0,0,0,.06);white-space:nowrap}
+.chip.btn{cursor:pointer}
+.chip.warn{background:#FE8A18;color:#fff;border-color:transparent}
+.chip.err{background:#D01012;color:#fff;border-color:transparent}
+.chip.good .dot{background:#00A64A}
+.dot{width:9px;height:9px;border-radius:50%;background:#7a8899;display:inline-block}
+.stud{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#FFE680,#F2CD37 55%,#C9A100);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);display:inline-block}
+/* bricks */
+.brick{--c:var(--main);--ct:var(--main-text);position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--c);color:var(--ct);border:0;border-radius:12px;padding:16px 22px 14px;margin-top:8px;font:900 19px/1.15 var(--font);cursor:pointer;box-shadow:inset 0 -6px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.28),0 8px 18px rgba(0,0,0,.16);transition:transform .08s,box-shadow .08s,filter .15s;user-select:none;-webkit-user-select:none;text-align:center}
+.brick::before{content:"";position:absolute;left:12px;right:12px;top:-7px;height:8px;background:radial-gradient(ellipse 8px 7px at 50% 100%,var(--c) 96%,transparent 100%) center 0/28px 8px repeat-x;filter:brightness(1.07)}
+.brick:hover{filter:brightness(1.06)}
+.brick:active{transform:translateY(4px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.22),0 3px 8px rgba(0,0,0,.16)}
+.brick.accent{--c:var(--accent);--ct:var(--accent-text)}
+.brick.ghost{--c:var(--surface2);--ct:var(--text)}
+.brick.gold{--c:var(--gold);--ct:#3A2A00}
+.brick.red{--c:#D01012;--ct:#fff}
+.brick.big{font-size:23px;padding:22px 26px 20px;width:100%}
+.brick.sm{font-size:15px;padding:10px 14px 9px;border-radius:10px}
+.brick.sm::before{left:8px;right:8px;top:-6px;height:7px;background-size:22px 7px}
+.brick:disabled{opacity:.45;cursor:default;transform:none}
+.linkbtn{background:none;border:0;color:var(--muted);font:800 15px var(--font);text-decoration:underline;cursor:pointer;padding:8px}
+/* cards */
+.card{background:var(--surface);border-radius:26px;box-shadow:var(--shadow);padding:22px;border:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.stack-gap>*+*{margin-top:18px}
+.section-title{display:flex;align-items:center;gap:10px;margin:30px 0 14px;font-size:22px}
+.muted{color:var(--muted)}
+.eyebrow{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.big-num{font-size:44px;font-weight:900;line-height:1}
+.bar{height:22px;border-radius:12px;background:var(--surface2);overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.12)}
+.bar>i{display:block;height:100%;min-width:0;border-radius:12px;background:repeating-linear-gradient(90deg,var(--accent) 0 24px,color-mix(in srgb,var(--accent) 78%,#000) 24px 26px);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.bar.sm{height:12px}
+/* hero */
+.hero{display:flex;align-items:center;gap:22px;margin-top:22px;overflow:hidden;position:relative;background:linear-gradient(135deg,var(--main),color-mix(in srgb,var(--main) 60%,#000));color:var(--main-text);border:0}
+.hero .fig{flex:none;filter:drop-shadow(0 10px 14px rgba(0,0,0,.3))}
+.hero h1{font-size:34px}
+.hero p{margin:6px 0 0;font-size:18px;font-weight:700;opacity:.92}
+.bubble{display:inline-block;background:rgba(255,255,255,.18);border-radius:16px;padding:8px 14px;font-weight:800;margin-top:12px}
+.goalbricks{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.goalbricks i{width:54px;height:30px;border-radius:7px;position:relative;background:rgba(255,255,255,.18);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15);display:block}
+.goalbricks i::before{content:"";position:absolute;left:7px;right:7px;top:-6px;height:7px;background:radial-gradient(ellipse 7px 6px at 50% 100%,rgba(255,255,255,.18) 96%,transparent 100%) 0 0/20px 7px repeat-x}
+.goalbricks i.on{background:var(--accent);box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),0 4px 10px rgba(0,0,0,.25);animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+.goalbricks i.on::before{background-image:radial-gradient(ellipse 7px 6px at 50% 100%,var(--accent) 96%,transparent 100%)}
+.countdown{display:inline-flex;gap:8px;align-items:center;background:var(--accent);color:var(--accent-text);border-radius:14px;padding:8px 14px;font-weight:900;margin-top:12px;margin-left:8px}
+/* missions */
+.mission{display:flex;align-items:center;gap:16px;padding:16px 18px}
+.mission+.mission{margin-top:14px}
+.zicon{width:58px;height:58px;flex:none;border-radius:16px;display:grid;place-items:center;font-size:30px;background:var(--surface2);box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
+.mission .t{font-size:20px;font-weight:900}
+.mission .s{font-size:14px;color:var(--muted);font-weight:700;margin-top:2px}
+.mission .go{margin-left:auto;flex:none}
+.done-tag{margin-left:auto;font-weight:900;color:#00852B;font-size:17px;display:flex;align-items:center;gap:6px}
+.statsrow{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
+.statsrow div{font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px}
+.mk{width:16px;height:12px;border-radius:3px;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.mk.studied{background:color-mix(in srgb,var(--main) 45%,var(--surface2))}.mk.passed{background:var(--main)}.mk.gold{background:var(--gold)}.mk.none{background:var(--empty)}
+/* map */
+.zones{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.zone{text-align:left;cursor:pointer;color:var(--text);display:flex;flex-direction:column;gap:10px;transition:transform .15s,box-shadow .15s;font-family:inherit}
+.zone:hover{transform:translateY(-3px)}
+.zone:active{transform:translateY(1px)}
+.zone .zn{font-size:20px;font-weight:900}
+.zone .zs{font-size:13px;color:var(--muted);font-weight:700;margin-top:-6px}
+.zone .zm{display:flex;justify-content:space-between;font-weight:800;font-size:14px;color:var(--muted)}
+.zone.complete{outline:3px solid var(--gold)}
+/* zone screen */
+.backrow{display:flex;align-items:center;gap:14px;margin-top:22px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:24px 16px;margin-top:22px}
+.tile{--c:var(--empty);--ct:var(--empty-text);flex-direction:column;align-items:flex-start;justify-content:flex-start;min-height:100px;padding:14px 14px 12px;text-align:left;width:100%;margin-top:0}
+.tile .n{font-size:12px;font-weight:900;opacity:.75;letter-spacing:.5px}
+.tile .l{font-size:18px;font-weight:900;margin-top:2px;word-break:break-word}
+.tile .marks{display:flex;gap:4px;margin-top:auto;padding-top:10px}
+.tile .marks i{width:16px;height:10px;border-radius:3px;background:rgba(0,0,0,.15);display:block}
+.tile .marks i.on{background:rgba(255,255,255,.9)}
+.tile.studied{--c:color-mix(in srgb,var(--main) 45%,var(--surface2));--ct:var(--text)}
+.tile.studied .marks i.on{background:var(--main)}
+.tile.passed{--c:var(--main);--ct:var(--main-text)}
+.tile.gold{--c:var(--gold);--ct:#3A2A00;background-image:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.45) 45%,transparent 60%);background-size:300% 100%;animation:shine 3.5s infinite}
+.tile.gold .marks i.on{background:#3A2A00}
+.tile.today{outline:3px dashed var(--accent);outline-offset:3px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-weight:800;font-size:14px;color:var(--muted);margin-top:14px}
+.legend span{display:flex;align-items:center;gap:6px}
+/* nav */
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+nav.bottom button{flex:1;max-width:140px;background:none;border:0;color:var(--muted);font:900 13px var(--font);display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 7px;border-radius:14px;cursor:pointer}
+nav.bottom .ico{font-size:25px;line-height:1.1}
+nav.bottom button.on{background:var(--main);color:var(--main-text);box-shadow:inset 0 -4px 0 rgba(0,0,0,.2),0 0 0 2px var(--accent)}
+/* modal */
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(6,10,20,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:var(--surface);color:var(--text);width:min(640px,100%);max-height:94vh;overflow:auto;border-radius:30px 30px 0 0;padding:26px 22px calc(26px + env(safe-area-inset-bottom));animation:up .32s cubic-bezier(.2,.9,.3,1.15);position:relative}
+@media (min-width:720px){.overlay{align-items:center}.sheet{border-radius:30px;padding:30px}}
+.sheet-head{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+.sheet-head h2{font-size:28px}
+.x{margin-left:auto;align-self:flex-start;width:44px;height:44px;border-radius:50%;border:0;background:var(--surface2);color:var(--text);font-size:22px;font-weight:900;cursor:pointer;flex:none}
+.ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.step{background:var(--surface2);border-radius:18px;padding:14px 10px;text-align:center}
+.step .si{width:46px;height:30px;margin:6px auto 8px;border-radius:7px;background:var(--empty);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
+.step.on .si{background:var(--main)}
+.step.on.g .si{background:var(--gold)}
+.step .sl{font-weight:900;font-size:15px}
+.step .sd{font-size:13px;color:var(--muted);font-weight:700;margin-top:3px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media (max-width:460px){.actions{grid-template-columns:1fr}}
+.callout{border-radius:18px;padding:14px 16px;font-weight:800;margin-top:16px;background:color-mix(in srgb,var(--gold) 22%,var(--surface));border:2px solid color-mix(in srgb,var(--gold) 60%,transparent)}
+.callout.info{background:color-mix(in srgb,var(--main) 12%,var(--surface));border-color:color-mix(in srgb,var(--main) 35%,transparent)}
+.callout.warn{background:color-mix(in srgb,#FE8A18 16%,var(--surface));border-color:color-mix(in srgb,#FE8A18 50%,transparent)}
+.hist{margin-top:20px;font-size:15px}
+.hist summary{cursor:pointer;font-weight:900;color:var(--muted)}
+.hist li{padding:6px 0;font-weight:700}
+.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
+.scores .brick{flex-direction:column;padding:18px 8px 14px;width:100%}
+.scores .brick b{font-size:30px}
+.scores .brick small{font-size:13px;opacity:.85}
+@media (max-width:460px){.scores{grid-template-columns:repeat(2,1fr)}}
+/* celebrate */
+.celebrate{text-align:center}
+.celebrate h1{font-size:38px;margin-top:6px;background:linear-gradient(90deg,var(--main),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;filter:saturate(1.2)}
+[data-mode=night] .celebrate h1{background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;background-clip:text}
+.celebrate .fig{animation:jump .7s cubic-bezier(.3,1.6,.5,1) .1s both}
+.bstack{display:flex;flex-direction:column-reverse;align-items:center;height:110px;justify-content:flex-start;margin:6px 0}
+.bstack i{display:block;width:96px;height:30px;border-radius:7px;margin-top:-2px;position:relative;background:var(--c);box-shadow:inset 0 -5px 0 rgba(0,0,0,.22);animation:drop .55s cubic-bezier(.3,1.5,.5,1) both}
+.bstack i::before{content:"";position:absolute;left:9px;right:9px;top:-6px;height:7px;background:radial-gradient(ellipse 7px 6px at 50% 100%,var(--c) 96%,transparent 100%) 0 0/26px 7px repeat-x}
+.reward{display:inline-flex;align-items:center;gap:8px;font-size:22px;font-weight:900;background:var(--surface2);border-radius:999px;padding:10px 18px;margin:12px 4px 0;animation:pop .5s cubic-bezier(.3,1.6,.5,1) .5s both}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.confetti i{position:absolute;top:-24px;width:16px;height:10px;border-radius:3px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);animation:fall linear forwards}
+/* toast */
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:50;background:#1B2A34;color:#fff;border-radius:16px;padding:12px 16px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.35);display:flex;gap:12px;align-items:center;animation:up .25s;max-width:92vw}
+.toast button{background:var(--accent);color:var(--accent-text);border:0;border-radius:10px;padding:8px 12px;font:900 14px var(--font);cursor:pointer}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:14px}
+.cal .dow{text-align:center;font-size:13px;font-weight:900;color:var(--muted)}
+.cal button{aspect-ratio:1/1;border:0;border-radius:14px;background:var(--surface2);color:var(--text);font:900 16px var(--font);cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:2px}
+.cal button.has{background:var(--main);color:var(--main-text);box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.cal button.goal::after{content:"★";position:absolute;top:3px;right:6px;font-size:12px;color:var(--accent)}
+.cal button.today{outline:3px solid var(--accent);outline-offset:1px}
+.cal button.sel{transform:scale(1.06);box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.cal button small{font-size:11px;font-weight:800;opacity:.9}
+.cal .blank{visibility:hidden}
+.calhead{display:flex;align-items:center;gap:10px}
+.calhead h2{flex:1;text-align:center;font-size:24px}
+.daylist li{padding:10px 0;border-bottom:1px solid var(--line);font-weight:700;display:flex;gap:10px;align-items:center}
+.daylist ul{list-style:none;padding:0;margin:0}
+/* style */
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.themecard{cursor:pointer;border:3px solid transparent;text-align:center;color:var(--text);font-family:inherit;position:relative;overflow:hidden;padding:18px 14px}
+.themecard.on{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent),var(--shadow)}
+.themecard .tn{font-size:20px;font-weight:900;margin-top:6px}
+.themecard .tt{font-size:14px;color:var(--muted);font-weight:700}
+.themecard .on-tag{position:absolute;top:12px;right:12px;background:var(--main);color:var(--main-text);border-radius:999px;padding:4px 10px;font-size:13px;font-weight:900}
+.swatches{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+.sw{width:58px;height:44px;border-radius:10px;border:0;cursor:pointer;position:relative;background:var(--c);box-shadow:inset 0 -5px 0 rgba(0,0,0,.22),0 4px 10px rgba(0,0,0,.12);margin-top:8px}
+.sw::before{content:"";position:absolute;left:6px;right:6px;top:-6px;height:7px;background:radial-gradient(ellipse 7px 6px at 50% 100%,var(--c) 96%,transparent 100%) 0 0/23px 7px repeat-x}
+.sw.on{outline:4px solid var(--text);outline-offset:3px}
+.sw span{position:absolute;inset:0;display:grid;place-items:center;font-weight:900;color:var(--t);font-size:20px}
+.seg{display:inline-flex;background:var(--surface2);border-radius:16px;padding:5px;gap:5px;margin-top:8px}
+.seg button{border:0;background:none;color:var(--text);font:900 17px var(--font);padding:12px 20px;border-radius:12px;cursor:pointer}
+.seg button.on{background:var(--main);color:var(--main-text);box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.field{display:block;margin-top:16px;font-weight:900}
+.field input,.field select{display:block;width:100%;margin-top:8px;font:800 18px var(--font);padding:13px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface2);color:var(--text)}
+.field small{font-weight:700;color:var(--muted)}
+.stepper{display:flex;align-items:center;gap:14px;margin-top:8px}
+.stepper b{font-size:28px;min-width:40px;text-align:center}
+.savebar{position:sticky;bottom:96px;z-index:4;display:flex;gap:12px;justify-content:center;margin-top:24px}
+/* parent */
+.ptable{width:100%;border-collapse:collapse;font-size:15px}
+.ptable td,.ptable th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}
+.ptable th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.ver{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.ver .vt{font-weight:900}
+.ver .vs{font-size:13px;color:var(--muted);font-weight:700}
+.ver .brick{margin-left:auto;flex:none}
+.vnum{width:34px;height:34px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-weight:900;flex:none}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.editbox{margin-top:20px;border:2px dashed var(--line);border-radius:18px;padding:14px}
+.editrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0}
+.editrow input{font:800 15px var(--font);padding:8px;border-radius:10px;border:2px solid var(--line);background:var(--surface2);color:var(--text)}
+.editrow input[type=number]{width:80px}
+/* pin */
+.pindots{display:flex;gap:14px;justify-content:center;margin:18px 0}
+.pindots i{width:22px;height:22px;border-radius:50%;background:var(--surface2);display:block;box-shadow:inset 0 2px 4px rgba(0,0,0,.15)}
+.pindots i.on{background:var(--main)}
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 12px;max-width:340px;margin:0 auto}
+.pinpad .brick{width:100%;font-size:26px}
+.shake{animation:shake .4s}
+/* choice */
+.choices{display:grid;gap:14px}
+.choice{text-align:left;cursor:pointer;color:var(--text);font-family:inherit;border:2px solid var(--line)}
+.choice:hover{border-color:var(--main)}
+/* animations */
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+@keyframes drop{from{transform:translateY(-220px);opacity:0}}
+@keyframes jump{0%{transform:translateY(30px) scale(.8);opacity:0}100%{transform:none;opacity:1}}
+@keyframes fall{to{transform:translateY(112vh) rotate(var(--r,540deg))}}
+@keyframes shine{0%{background-position:100% 0}60%,100%{background-position:-100% 0}}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.hero .fig{animation:bob 3s ease-in-out infinite}
+@media (max-width:560px){.hero{flex-direction:column;text-align:center}.hero h1{font-size:28px}.goalbricks{justify-content:center}.logo .txt{display:none}.chip{padding:6px 10px;font-size:14px}
+  .mission{flex-wrap:wrap}.mission>div:nth-child(2){flex:1;min-width:0}.mission .go,.mission .done-tag{width:100%;margin-left:0;justify-content:center}
+  .chip .savetxt{display:none}.wrap{padding:0 12px}nav.bottom{gap:2px;padding-left:4px;padding-right:4px}nav.bottom button{font-size:11px}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.hidden{display:none!important}
+#selftest{white-space:pre-wrap;font:13px monospace;position:relative;z-index:99;background:#fff;color:#000;padding:10px}
+</style>
+</head>
+<body>
+<div id="scenery"></div>
+<div id="app"><div class="wrap" style="padding-top:40px;font-weight:900;font-size:22px">Loading SpellCoach...</div></div>
+<input type="file" id="filepick" accept=".json,application/json" class="hidden">
+<noscript>SpellCoach needs JavaScript turned on.</noscript>
+<script>const WORD_LIST_TEXT = "Word List Name\r\n2026 Spelling Words_Set_01_2026-1B1\r\n2026 Spelling Words_Set_02_2026-1B2\r\n2026 Spelling Words_Set_03_2026-2B1\r\n2026 Spelling Words_Set_04_2026-2B2\r\n2026 Spelling Words_Set_05_2026-2B3\r\n2026 Spelling Words_Set_06_2026-2B4\r\n2026 Spelling Words_Set_07_2026-3B1\r\n2026 Spelling Words_Set_08_2026-3B2\r\n2026 Spelling Words_Set_09_2026 School\r\nCustom_Set_01_PNSB\r\nCustom_Set_02_MostMis\r\nCustom_Set_03_woirds1\r\nCustom_Set_04_prelims\r\nCustom_Set_05_sasbvd\r\nCustom_Set_06_sasbD\r\nCustom_Set_07_sasbMed\r\nCustom_Set_08_NS26Fin\r\nCustom_Set_09_NS26F2\r\nGeographical Words Module_Set_01\r\nGeographical Words Module_Set_02\r\nGeographical Words Module_Set_03\r\nGeographical Words Module_Set_04\r\nGeographical Words Module_Set_05\r\nGeographical Words Module_Set_06\r\nGeographical Words Module_Set_07\r\nGeographical Words Module_Set_08\r\nGeographical Words Module_Set_09\r\nGeographical Words Module_Set_10\r\nGeographical Words Module_Set_11\r\nGeographical Words Module_Set_12\r\nGeographical Words Module_Set_13\r\nGeographical Words Module_Set_14\r\nGeographical Words Module_Set_15\r\nGeographical Words Module_Set_16\r\nGeographical Words Module_Set_17\r\nGeographical Words Module_Set_18\r\nGeographical Words Module_Set_19\r\nGeographical Words Module_Set_20\r\nGeographical Words Module_Set_21\r\nGeographical Words Module_Set_22\r\nMasterSpellingWords\r\nPast National Scripps Words_Module 2631 Words_Set_01_Set 1\r\nPast National Scripps Words_Module 2631 Words_Set_02_Set 2\r\nPast National Scripps Words_Module 2631 Words_Set_03_Set 3\r\nPast National Scripps Words_Module 2631 Words_Set_04_Set 4\r\nPast National Scripps Words_Module 2631 Words_Set_05_Set 5\r\nPast National Scripps Words_Module 2631 Words_Set_06_Set 6\r\nPast National Scripps Words_Module 2631 Words_Set_07_Set 7\r\nPast National Scripps Words_Module 2631 Words_Set_08_Set 8\r\nPast National Scripps Words_Module 2631 Words_Set_09_Set 9\r\nPast National Scripps Words_Module 2631 Words_Set_10_Set 10\r\nPast National Scripps Words_Module 2631 Words_Set_11_Set 11\r\nPast National Scripps Words_Module 2631 Words_Set_12_Set 12\r\nPast National Scripps Words_Module 2631 Words_Set_13_Set 13\r\nPast National Scripps Words_Module 2631 Words_Set_14_Set 14\r\nPast National Scripps Words_Module 2631 Words_Set_15_Set 15\r\nPast National Scripps Words_Module 2631 Words_Set_16_Set 16\r\nPast National Scripps Words_Module 2631 Words_Set_17_Set 17\r\nPast National Scripps Words_Module 2631 Words_Set_18_Set 18\r\nPast National Scripps Words_Module 2631 Words_Set_19_Set 19\r\nPast National Scripps Words_Module 2631 Words_Set_20_Set 20\r\nPast National Scripps Words_Module 2631 Words_Set_21_Set 21\r\nPast National Scripps Words_Module 2631 Words_Set_22_Set 22\r\nPast National Scripps Words_Module 2631 Words_Set_23_Set 23\r\nPast National Scripps Words_Module 2631 Words_Set_24_Set 24\r\nPast National Scripps Words_Module 2631 Words_Set_25_Set 25\r\nPast National Scripps Words_Module 2631 Words_Set_26_Set 26\r\nPast National Scripps Words_Module 2631 Words_Set_27_Set 27\r\nPast National Scripps Words_Module 2631 Words_Set_28_Set 28\r\nPast National Scripps Words_Module 2631 Words_Set_29_Set 29\r\nPast National Scripps Words_Module 2631 Words_Set_30_Set 30\r\nPast National Scripps Words_Module 2631 Words_Set_31_Set 31\r\nPast National Scripps Words_Module 2631 Words_Set_32_Set 32\r\nPast National Scripps Words_Module 2631 words_set_33_set 33\r\nPast National Scripps Words_Module 2631 words_set_34_set 34\r\nPast SASB Finals Words_Set_2009\r\nPast SASB Finals Words_Set_2010\r\nPast SASB Finals Words_Set_2011\r\nPast SASB Finals Words_Set_2012\r\nPast SASB Finals Words_Set_2013\r\nPast SASB Finals Words_Set_2014\r\nPast SASB Finals Words_Set_2015\r\nPast SASB Finals Words_Set_2016\r\nPast SASB Finals Words_Set_2017\r\nPast SASB Finals Words_Set_2018\r\nPast SASB Finals Words_Set_2019\r\nPast SASB Finals Words_Set_2020\r\nPast SASB Finals Words_Set_2021\r\nPast SASB Finals Words_Set_2022\r\nPast SASB Finals Words_Set_2023\r\nPast SASB Finals Words_Set_2024\r\nPast Scripps District-county Spelling Words_Set_01_2020\r\nPast Scripps District-county Spelling Words_Set_02_2019\r\nPast Scripps District-county Spelling Words_Set_03_2018\r\nPast Scripps District-county Spelling Words_Set_04_2017\r\nPast Scripps District-county Spelling Words_Set_05_2016\r\nPast Scripps District-county Spelling Words_Set_06_2015\r\nPast Scripps District-county Spelling Words_Set_07_2014\r\nPast Scripps District-county Spelling Words_Set_08_2013\r\nPast Scripps District-county Spelling Words_Set_09_2024-1B Removed\r\nPast Scripps District-county Spelling Words_Set_10_2024-2B Removed\r\nPast Scripps District-county Spelling Words_Set_11_2024-3B Removed\r\nPast Scripps District-county Spelling Words_Set_12_2023-1B Removed\r\nPast Scripps District-county Spelling Words_Set_13_2023-2B Removed\r\nPast Scripps District-county Spelling Words_Set_14_2023-3B Removed\r\nPast Scripps District-county Spelling Words_Set_15_2022-1B Removed\r\nPast Scripps District-county Spelling Words_Set_16_2022-2B Removed\r\nPast Scripps District-county Spelling Words_Set_17_2022-3B Removed\r\nPast Scripps District-county Spelling Words_Set_18_2021-1B Removed\r\nPast Scripps District-county Spelling Words_Set_19_2021-2B Removed\r\nPast Scripps District-county Spelling Words_Set_20_2021-3B Removed\r\nPast Scripps District-county Spelling Words_Set_21_2020-1B Removed\r\nPast Scripps District-county Spelling Words_Set_22_2020-2B Removed\r\nPast Scripps District-county Spelling Words_Set_23_2020-3B Removed\r\nPast Scripps Regional Words_Set_01_2021\r\nPast Scripps Regional Words_Set_02_2020\r\nPast Scripps Regional Words_Set_03_2019\r\nPast Scripps Regional Words_Set_04_2018\r\nPast Scripps Regional Words_Set_05_2017\r\nPast Scripps Regional Words_Set_06_2016\r\nPast Scripps Regional Words_Set_07_2015\r\nPast Scripps Regional Words_Set_08_2014\r\nPast Scripps Regional Words_Set_09_2013\r\nPast Scripps Regional Words_Set_10_2012\r\nPast Scripps Regional Words_Set_11_2011\r\nPast Scripps Regional Words_Set_12_2010\r\nPast Scripps Regional Words_Set_13_2009\r\nPast Scripps School Words_Set_01_2025 SCH\r\nPast Scripps School Words_Set_02_2024 SCH\r\nPast Scripps School Words_Set_03_2023 Off List\r\nPast Scripps School Words_Set_04_2023\r\nPast Scripps School Words_Set_05_2022\r\nPast Scripps School Words_Set_06_2021\r\nPast Scripps School Words_Set_07_2020\r\nPast Scripps School Words_Set_08_2019\r\nPast Scripps School Words_Set_09_2018\r\nPast Scripps School Words_Set_10_2017\r\nPast Scripps School Words_Set_11_2016\r\nPast Scripps School Words_Set_12_2015\r\nPast Scripps School Words_Set_13_2014\r\nPast Scripps School Words_Set_14_2013\r\nPast Scripps School Words_Set_15_2012\r\nPast Scripps School Words_Set_16_2011\r\nPast SNSB Words_Set_01_2026\r\nPast SNSB Words_Set_02_2025\r\nPast SNSB Words_Set_03_2024\r\nPast SNSB Words_Set_04_2023\r\nPast SNSB Words_Set_05_2022\r\nPast SNSB Words_Set_06_2021\r\nPast SNSB Words_Set_07_2021\r\nPast SNSB Words_Set_08_2019\r\nPast SNSB Words_Set_09_2019\r\nPast SNSB Words_Set_10_2018A\r\nPast SNSB Words_Set_11_2018B\r\nPast SNSB Words_Set_12_2017\r\nPast SNSB Words_Set_13_2016\r\nPast SNSB Words_Set_14_2015\r\nPast SNSB Words_Set_15_2014\r\nPast SNSB Words_Set_16_2013\r\nPast SNSB Words_Set_17_2012\r\nPast SNSB Words_Set_18_2011\r\nPast SNSB Words_Set_19_2010\r\nPast SNSB Words_Set_20_2009\r\nPopular National Words - Set 01\r\nPopular National Words - Set 02\r\nPopular National Words - Set 03\r\nPopular National Words - Set 04\r\nPopular National Words - Set 05\r\nPopular National Words_Set_06\r\nPopular National Words_Set_07\r\nPopular National Words_Set_08\r\nPopular National Words_Set_09\r\nPopular National Words_Set_10\r\nPopular National Words_Set_11\r\nPopular National Words_Set_12\r\nPopular National Words_Set_13\r\nPopular National Words_Set_14\r\nPopular National Words_Set_15\r\nPopular National Words_Set_16\r\nPopular National Words_Set_17\r\nPopular National Words_Set_18\r\nPopular National Words_Set_19\r\nPopular National Words_Set_20\r\nPopular National Words_Set_21\r\nPopular National Words_Set_22\r\nPopular National Words_Set_23\r\nPopular National Words_Set_24\r\nScientific Words Module_Set_01\r\nScientific Words Module_Set_02\r\nSpelling Word List 1_Set_01\r\nSpelling Word List 1_Set_02\r\nSpelling Word List 1_Set_03\r\nSpelling Word List 1_Set_04\r\nSpelling Word List 1_Set_05\r\nSpelling Word List 1_Set_06\r\nSpelling Word List 1_Set_07\r\nSpelling Word List 1_Set_08\r\nSpelling Word List 1_Set_09\r\nSpelling Word List 1_Set_10\r\nSpelling Word List 1_Set_11\r\nSpelling Word List 1_Set_12\r\nSpelling Word List 1_Set_13\r\nSpelling Word List 1_Set_14\r\nSpelling Word List 1_Set_15\r\nSpelling Word List 1_Set_16\r\nSpelling Word List 1_Set_17\r\nSpelling Word List 10 - Set 01\r\nSpelling Word List 10 - Set 02\r\nSpelling Word List 10 - Set 03\r\nSpelling Word List 10 - Set 04\r\nSpelling Word List 10 - Set 05\r\nSpelling Word List 10 - Set 06\r\nSpelling Word List 10 - Set 07\r\nSpelling Word List 10 - Set 08\r\nSpelling Word List 10 - Set 09\r\nSpelling Word List 10 - Set 10\r\nSpelling Word List 10 - Set 11\r\nSpelling Word List 10 - Set 12\r\nSpelling Word List 10 - Set 13\r\nSpelling Word List 10 - Set 14\r\nSpelling Word List 10 - Set 15\r\nSpelling Word List 10 - Set 16\r\nSpelling Word List 10 - Set 17\r\nSpelling Word List 10 - Set 18\r\nSpelling Word List 10 - Set 19\r\nSpelling Word List 10 - Set 20\r\nSpelling Word List 10 - Set 21\r\nSpelling Word List 10 - Set 22\r\nSpelling Word List 10 - Set 23\r\nSpelling Word List 10 - Set 24\r\nSpelling Word List 10 - Set 25\r\nSpelling Word List 10 - Set 26\r\nSpelling Word List 10 - Set 27\r\nSpelling Word List 10 - Set 28\r\nSpelling Word List 10 - Set 29\r\nSpelling Word List 10 - Set 30\r\nSpelling Word List 2_Set_01\r\nSpelling Word List 2_Set_02\r\nSpelling Word List 2_Set_03\r\nSpelling Word List 2_Set_04\r\nSpelling Word List 2_Set_05\r\nSpelling Word List 2_Set_06\r\nSpelling Word List 2_Set_07\r\nSpelling Word List 2_Set_08\r\nSpelling Word List 2_Set_09\r\nSpelling Word List 2_Set_10\r\nSpelling Word List 2_Set_11\r\nSpelling Word List 2_Set_12\r\nSpelling Word List 2_Set_13\r\nSpelling Word List 2_Set_14\r\nSpelling Word List 2_Set_15\r\nSpelling Word List 2_Set_16\r\nSpelling Word List 2_Set_17\r\nSpelling Word List 2_Set_18\r\nSpelling Word List 2_Set_19\r\nSpelling Word List 2_Set_20\r\nSpelling Word List 2_Set_21\r\nSpelling Word List 2_Set_22\r\nSpelling Word List 2_Set_23\r\nSpelling Word List 2_Set_24\r\nSpelling Word List 2_Set_25\r\nSpelling Word List 3 - Set 01\r\nSpelling Word List 3 - Set 02\r\nSpelling Word List 3 - Set 03\r\nSpelling Word List 3 - Set 04\r\nSpelling Word List 3 - Set 05\r\nSpelling Word List 3 - Set 06\r\nSpelling Word List 3 - Set 07\r\nSpelling Word List 3 - Set 08\r\nSpelling Word List 3 - Set 09\r\nSpelling Word List 3 - Set 10\r\nSpelling Word List 3 - Set 11\r\nSpelling Word List 3 - Set 12\r\nSpelling Word List 3 - Set 13\r\nSpelling Word List 3 - Set 14\r\nSpelling Word List 3 - Set 15\r\nSpelling Word List 3 - Set 16\r\nSpelling Word List 3 - Set 17\r\nSpelling Word List 3 - Set 18\r\nSpelling Word List 3 - Set 19\r\nSpelling Word List 3 - Set 20\r\nSpelling Word List 3 - Set 21\r\nSpelling Word List 3 - Set 22\r\nSpelling Word List 3 - Set 23\r\nSpelling Word List 4 - Set 01\r\nSpelling Word List 4 - Set 02\r\nSpelling Word List 4 - Set 03\r\nSpelling Word List 4 - Set 04\r\nSpelling Word List 4 - Set 05\r\nSpelling Word List 4 - Set 06\r\nSpelling Word List 4 - Set 07\r\nSpelling Word List 4 - Set 08\r\nSpelling Word List 4 - Set 09\r\nSpelling Word List 4 - Set 10\r\nSpelling Word List 4 - Set 11\r\nSpelling Word List 4 - Set 12\r\nSpelling Word List 4 - Set 13\r\nSpelling Word List 4 - Set 14\r\nSpelling Word List 4 - Set 15\r\nSpelling Word List 4 - Set 16\r\nSpelling Word List 4 - Set 17\r\nSpelling Word List 4 - Set 18\r\nSpelling Word List 4 - Set 19\r\nSpelling Word List 4 - Set 20\r\nSpelling Word List 4 - Set 21\r\nSpelling Word List 4 - Set 22\r\nSpelling Word List 4 - Set 23\r\nSpelling Word List 4 - Set 24\r\nSpelling Word List 4 - Set 25\r\nSpelling Word List 5 - Set 01\r\nSpelling Word List 5 - Set 02\r\nSpelling Word List 5 - Set 03\r\nSpelling Word List 5 - Set 04\r\nSpelling Word List 5 - Set 05\r\nSpelling Word List 5 - Set 06\r\nSpelling Word List 5 - Set 07\r\nSpelling Word List 5 - Set 08\r\nSpelling Word List 5 - Set 09\r\nSpelling Word List 5 - Set 10\r\nSpelling Word List 5 - Set 11\r\nSpelling Word List 5 - Set 12\r\nSpelling Word List 5 - Set 13\r\nSpelling Word List 5 - Set 14\r\nSpelling Word List 5 - Set 15\r\nSpelling Word List 5 - Set 16\r\nSpelling Word List 5 - Set 17\r\nSpelling Word List 5 - Set 18\r\nSpelling Word List 5 - Set 19\r\nSpelling Word List 5 - Set 20\r\nSpelling Word List 5 - Set 21\r\nSpelling Word List 5 - Set 22\r\nSpelling Word List 5 - Set 23\r\nSpelling Word List 5 - Set 24\r\nSpelling Word List 5 - Set 25\r\nSpelling Word List 5 - Set 26\r\nSpelling Word List 5 - Set 27\r\nSpelling Word List 5 - Set 28\r\nSpelling Word List 5 - Set 29\r\nSpelling Word List 5 - Set 30\r\nSpelling Word List 5 - Set 31\r\nSpelling Word List 6 - Set 01\r\nSpelling Word List 6 - Set 02\r\nSpelling Word List 6 - Set 03\r\nSpelling Word List 6 - Set 04\r\nSpelling Word List 6 - Set 05\r\nSpelling Word List 6 - Set 06\r\nSpelling Word List 6 - Set 07\r\nSpelling Word List 6 - Set 08\r\nSpelling Word List 6 - Set 09\r\nSpelling Word List 6 - Set 10\r\nSpelling Word List 6 - Set 11\r\nSpelling Word List 6 - Set 12\r\nSpelling Word List 6 - Set 13\r\nSpelling Word List 6 - Set 14\r\nSpelling Word List 6 - Set 15\r\nSpelling Word List 6 - Set 16\r\nSpelling Word List 6 - Set 17\r\nSpelling Word List 6 - Set 18\r\nSpelling Word List 6 - Set 19\r\nSpelling Word List 6 - Set 20\r\nSpelling Word List 6 - Set 21\r\nSpelling Word List 6_Set_22\r\nSpelling Word List 6_Set_23\r\nSpelling Word List 6_Set_24\r\nSpelling Word List 6_Set_25\r\nSpelling Word List 6_Set_26\r\nSpelling Word List 6_Set_27\r\nSpelling Word List 6_Set_28\r\nSpelling Word List 6_Set_29\r\nSpelling Word List 6_Set_30\r\nSpelling Word List 7 - Set 01\r\nSpelling Word List 7 - Set 02\r\nSpelling Word List 7 - Set 03\r\nSpelling Word List 7 - Set 04\r\nSpelling Word List 7 - Set 05\r\nSpelling Word List 7 - Set 06\r\nSpelling Word List 7 - Set 07\r\nSpelling Word List 7 - Set 08\r\nSpelling Word List 7 - Set 09\r\nSpelling Word List 7 - Set 10\r\nSpelling Word List 7 - Set 11\r\nSpelling Word List 7 - Set 12\r\nSpelling Word List 7 - Set 13\r\nSpelling Word List 7 - Set 14\r\nSpelling Word List 7 - Set 15\r\nSpelling Word List 7 - Set 16\r\nSpelling Word List 7 - Set 17\r\nSpelling Word List 7 - Set 18\r\nSpelling Word List 7 - Set 19\r\nSpelling Word List 7 - Set 20\r\nSpelling Word List 7 - Set 21\r\nSpelling Word List 7 - Set 22\r\nSpelling Word List 7 - Set 23\r\nSpelling Word List 7 - Set 24\r\nSpelling Word List 7 - Set 25\r\nSpelling Word List 8 - Set 01\r\nSpelling Word List 8 - Set 02\r\nSpelling Word List 8 - Set 03\r\nSpelling Word List 8 - Set 04\r\nSpelling Word List 8 - Set 05\r\nSpelling Word List 8 - Set 06\r\nSpelling Word List 8 - Set 07\r\nSpelling Word List 8 - Set 08\r\nSpelling Word List 8 - Set 09\r\nSpelling Word List 8 - Set 10\r\nSpelling Word List 8 - Set 11\r\nSpelling Word List 8 - Set 12\r\nSpelling Word List 8 - Set 13\r\nSpelling Word List 8 - Set 14\r\nSpelling Word List 8 - Set 15\r\nSpelling Word List 8 - Set 16\r\nSpelling Word List 8 - Set 17\r\nSpelling Word List 8 - Set 18\r\nSpelling Word List 8 - Set 19\r\nSpelling Word List 8 - Set 20\r\nSpelling Word List 8 - Set 21\r\nSpelling Word List 8 - Set 22\r\nSpelling Word List 8 - Set 23\r\nSpelling Word List 8 - Set 24\r\nSpelling Word List 9 - Set 01\r\nSpelling Word List 9 - Set 02\r\nSpelling Word List 9 - Set 03\r\nSpelling Word List 9 - Set 04\r\nSpelling Word List 9 - Set 05\r\nSpelling Word List 9 - Set 06\r\nSpelling Word List 9 - Set 07\r\nSpelling Word List 9 - Set 08\r\nSpelling Word List 9 - Set 09\r\nSpelling Word List 9 - Set 10\r\nSpelling Word List 9 - Set 11\r\nSpelling Word List 9 - Set 12\r\nSpelling Word List 9 - Set 13\r\nSpelling Word List 9 - Set 14\r\nSpelling Word List 9 - Set 15\r\nSpelling Word List 9 - Set 16\r\nSpelling Word List 9 - Set 17\r\nSpelling Word List 9 - Set 18\r\nSpelling Word List 9 - Set 19\r\nSpelling Word List 9 - Set 20\r\nSpelling Word List 9 - Set 21\r\nSpelling Word List 9 - Set 22\r\nSpelling Word List 9 - Set 23\r\nSpelling Word List 9 - Set 24\r\nSpelling Word List 9 - Set 25\r\nSpelling Word List 9 - Set 26\r\nSpelling Word List 9 - Set 27\r\nSpelling Word List 9 - Set 28\r\nSpelling Word List 9 - Set 29\r\nSpelling Word List 9 - Set 30\r\nSpelling Word List 9 - Set 31\r\nSpelling Word List 9 - Set 32\r\nLatin Roots\r\nGreek  Roots\r\nNew Latin  Roots\r\nNew Latin  Roots 2\r\nMiddle English  Roots\r\nFrench Roots\r\nInt. Sci. Vocab  Roots\r\nOthers Roots\r\nIntermediate Coaching - HW-Week2\r\nIntermediate Coaching - HW- Week7\r\n";</script>
+<script>
+'use strict';
+/* ================= constants ================= */
+const APP_VERSION = '1.0.0';
+const SCHEMA_VERSION = 1;
+const MAX_VERSIONS = 10;
+const FILE_NAME = 'spellcoach-progress.json';
+const BAK_NAME = 'spellcoach-progress.bak.json';
+const LEGACY_FILE_NAME = 'brickquest-progress.json';
+const APP_IDS = ['SpellCoach', 'BrickQuest'];
+const WORDLIST_FILE = 'Word List Name.txt';
+const PASS_SCORE = 80;
+const GOLD_DAYS = 7;
+
+const BRICK_COLORS = {
+  red:{hex:'#D01012',name:'Red'}, blue:{hex:'#0055BF',name:'Blue'}, yellow:{hex:'#F2CD37',name:'Yellow'},
+  green:{hex:'#00852B',name:'Green'}, black:{hex:'#1B2A34',name:'Black'}, white:{hex:'#F4F4F4',name:'White'},
+  orange:{hex:'#FE8A18',name:'Orange'}, lime:{hex:'#A5CA18',name:'Lime'}, purple:{hex:'#81007B',name:'Purple'},
+  teal:{hex:'#069D9F',name:'Teal'}, gray:{hex:'#A0A5A9',name:'Gray'}
+};
+
+const THEMES = {
+  city:{name:'Brick City', tag:'Build the coolest city ever', hero:'Builder', done:'Snap! Build complete!', gold:'GOLD BRICK! Master build!',
+        groups:{missions:'HQ Missions', lists:'Neighborhoods', special:'Special Builds', compete:'Champion Zones'}, mapTitle:'City Map', champion:'Champion Tower'},
+  space:{name:'Space Base', tag:'Blast off to new planets', hero:'Astronaut', done:'Lift-off! Mission complete!', gold:'GOLD BRICK! Star mission!',
+        groups:{missions:'Mission Control', lists:'Star Sectors', special:'Science Stations', compete:'Champion Galaxy'}, mapTitle:'Galaxy Map', champion:'Champion Planet'},
+  castle:{name:"Knight's Castle", tag:'Defend the kingdom, brick by brick', hero:'Knight', done:'Huzzah! Quest complete!', gold:'GOLD BRICK! Legendary quest!',
+        groups:{missions:'Royal Missions', lists:'Villages', special:'Secret Lands', compete:'Champion Realms'}, mapTitle:'Kingdom Map', champion:'Dragon Peak'},
+  chess:{name:'Chess Kingdom', tag:'Outsmart every word, move by move', hero:'Grandmaster', done:'Check! Smart move!', gold:'GOLD BRICK! Checkmate!',
+        groups:{missions:'Opening Moves', lists:'Chess Clubs', special:'Strategy Rooms', compete:'Championship Boards'}, mapTitle:'Chessboard Map', champion:'World Championship'},
+  diving:{name:'Deep Sea Dive', tag:'Dive deep for treasure words', hero:'Diver', done:'Splash! Dive complete!', gold:'GOLD BRICK! Sunken treasure!',
+        groups:{missions:'Dive Base', lists:'Coral Reefs', special:'Ocean Wonders', compete:'Champion Depths'}, mapTitle:'Ocean Map', champion:'Champion Abyss'}};
+
+const ZONE_DEFS = [
+  {id:'hq2026', match:/^2026 spelling words$/, group:'missions', order:1, short:'2026 Spelling Words', names:{city:'City Hall',space:'Mission Control',castle:'Royal Court',chess:"King's Court",diving:'Dive Base'}, icons:{city:'🏛️',space:'🛰️',castle:'👑',chess:'♔',diving:'⚓'}},
+  {id:'custom', match:/^custom$/, group:'missions', order:2, short:'Custom Sets', names:{city:'Secret Workshop',space:'Secret Hangar',castle:'Wizard Tower',chess:'Secret Gambit',diving:"Neptune's Grotto"}, icons:{city:'🛠️',space:'🚀',castle:'🧙',chess:'♞',diving:'🔱'}},
+  {id:'coach', match:/^intermediate coaching$/, group:'missions', order:3, short:'Intermediate Coaching', names:{city:'Coach HQ',space:'Training Pod',castle:'Training Yard',chess:'Practice Board',diving:'Training Lagoon'}, icons:{city:'📋',space:'🧑‍🚀',castle:'⚔️',chess:'♟️',diving:'🤿'}},
+  {id:'popular', match:/^popular national words$/, group:'special', order:200, short:'Popular National Words', names:{city:'Race Track',space:'Asteroid Belt',castle:'Battle Plains',chess:'Blitz Arena',diving:'Dolphin Bay'}, icons:{city:'🏁',space:'☄️',castle:'🛡️',chess:'⏱️',diving:'🐬'}},
+  {id:'geo', match:/^geographical words module$/, group:'special', order:201, short:'Geographical Words', names:{city:'Harbor',space:'Planet Explorer',castle:"Explorer's Isles",chess:'World Openings',diving:'Coral Islands'}, icons:{city:'⚓',space:'🌍',castle:'🏝️',chess:'🌍',diving:'🏝️'}},
+  {id:'sci', match:/^scientific words module$/, group:'special', order:202, short:'Scientific Words', names:{city:'Science Lab',space:'Rocket Lab',castle:'Alchemist Lab',chess:'Strategy Lab',diving:'Ocean Lab'}, icons:{city:'🧪',space:'🔬',castle:'⚗️',chess:'🧠',diving:'🔬'}},
+  {id:'roots', match:/^roots$/, group:'special', order:203, short:'Word Roots', names:{city:'City Museum',space:'Moon Ruins',castle:'Ancient Ruins',chess:'Ancient Masters',diving:'Sunken Ruins'}, icons:{city:'🏺',space:'🌙',castle:'🏺',chess:'📜',diving:'🏺'}},
+  {id:'master', match:/^masterspellingwords$/, group:'special', order:204, short:'Master Spelling Words', names:{city:'Mega Mall',space:'Star Base',castle:'Great Hall',chess:'Grand Library',diving:'Treasure Cave'}, icons:{city:'🏬',space:'⭐',castle:'🏰',chess:'📚',diving:'💎'}},
+  {id:'school', match:/^past scripps school words$/, group:'compete', order:300, short:'Past Scripps School', names:{city:'School Campus',space:'Cadet Academy',castle:'Training Grounds',chess:'School Tournament',diving:'Shallow Waters'}, icons:{city:'🏫',space:'🎓',castle:'🎯',chess:'♙',diving:'🐚'}},
+  {id:'district', match:/^past scripps district-county spelling words$/, group:'compete', order:301, short:'Past Scripps District-County', names:{city:'Fire Station',space:'Space Station',castle:'Iron Bridge',chess:'County Tournament',diving:'Kelp Forest'}, icons:{city:'🚒',space:'🛰️',castle:'🌉',chess:'♗',diving:'🌿'}},
+  {id:'regional', match:/^past scripps regional words$/, group:'compete', order:302, short:'Past Scripps Regional', names:{city:'Police HQ',space:'Moon Base',castle:'Castle Gates',chess:'Regional Tournament',diving:'Shipwreck'}, icons:{city:'🚓',space:'🌕',castle:'🏯',chess:'♖',diving:'🚢'}},
+  {id:'sasb', match:/^past sasb finals words$/, group:'compete', order:303, short:'Past SASB Finals', names:{city:'Stadium',space:'Galaxy Arena',castle:'Arena of Champions',chess:'Masters Arena',diving:'Shark Arena'}, icons:{city:'🏟️',space:'🌌',castle:'🏟️',chess:'♕',diving:'🦈'}},
+  {id:'national', match:/^past national scripps words/, group:'compete', order:304, short:'Past National Scripps', names:{city:'Skyscraper',space:'Mothership',castle:'Mega Fortress',chess:'Grandmaster Hall',diving:'Deep Trench'}, icons:{city:'🏙️',space:'🛸',castle:'🏰',chess:'🏛️',diving:'🌊'}},
+  {id:'snsb', match:/^past snsb words$/, group:'compete', order:305, short:'Past SNSB', names:{city:'Champion Tower',space:'Champion Planet',castle:'Dragon Peak',chess:'World Championship',diving:'Champion Abyss'}, icons:{city:'🏆',space:'🏆',castle:'🐉',chess:'🏆',diving:'🐋'}}
+];const GROUP_ORDER = ['missions','lists','special','compete','other'];
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const nowIso = () => new Date().toISOString();
+const pad = n => String(n).padStart(2,'0');
+const dayKey = d => { const x = new Date(d); return `${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`; };
+const todayKey = () => dayKey(Date.now());
+const keyToDate = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d); };
+const dayNum = k => { const [y,m,d] = k.split('-').map(Number); return Math.round(Date.UTC(y,m-1,d)/864e5); };
+const addDays = (k,n) => { const d = keyToDate(k); d.setDate(d.getDate()+n); return dayKey(d); };
+const fmtDate = iso => new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+const fmtShort = iso => new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+const fmtTime = iso => new Date(iso).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+const fmtDT = iso => `${fmtDate(iso)}, ${fmtTime(iso)}`;
+const fmtKey = (k,o={weekday:'long',month:'long',day:'numeric'}) => keyToDate(k).toLocaleDateString(undefined,o);
+const toLocalInput = iso => { const d = new Date(iso); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const deviceName = () => isIOS() ? 'iPad' : (/Windows/.test(navigator.userAgent) ? 'PC' : (/Mac/.test(navigator.userAgent) ? 'Mac' : 'device'));
+const plural = (n,w,p) => `${n} ${n===1?w:(p||w+'s')}`;
+function hexToRgb(h){ h=h.replace('#',''); return [0,2,4].map(i=>parseInt(h.substr(i,2),16)); }
+function rgbToHex(r){ return '#'+r.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mix(a,b,t){ const A=hexToRgb(a),B=hexToRgb(b); return rgbToHex(A.map((v,i)=>v*(1-t)+B[i]*t)); }
+function lum(h){ const [r,g,b]=hexToRgb(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}); return .2126*r+.7152*g+.0722*b; }
+const textOn = h => lum(h) > .42 ? '#1B2A34' : '#FFFFFF';
+function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+async function hashPin(pin){
+  // Salt predates the rename; changing it would invalidate every saved parent PIN.
+  const msg = 'brickquest:' + pin;
+  try { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg)); return 'sha256:' + [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  catch { let h = 5381; for (const c of msg) h = ((h<<5)+h+c.charCodeAt(0))|0; return 'djb2:' + (h>>>0).toString(16); }
+}
+
+/* ================= word list catalog ================= */
+let SETS = [], ZONES = [], ZONE_BY_ID = {}, SET_BY_NAME = {};
+function parseListNames(txt){ return String(txt||'').split(/\r?\n/).map(s=>s.trim()).filter(s=>s && s.toLowerCase() !== 'word list name'); }
+function parseSet(name){
+  const m = name.match(/^(.*?)(?:_| - )set[_ ](\d+)(?:_(.*))?$/i);
+  if (m) return {collection:m[1].trim(), num:+m[2], label:(m[3]||'').trim()};
+  if (/\broots(\s+\d+)?$/i.test(name)) return {collection:'Roots', num:0, label:name.replace(/\s+/g,' ').trim()};
+  const c = name.match(/^(intermediate coaching)\s*-\s*(.*)$/i);
+  if (c) return {collection:c[1], num:0, label:c[2].trim()};
+  return {collection:name, num:0, label:name};
+}
+function zoneDefFor(col){
+  const c = col.toLowerCase().replace(/\s+/g,' ').trim();
+  const m = c.match(/^spelling word list (\d+)$/);
+  if (m){ const n=+m[1]; return {id:'list'+n, group:'lists', order:100+n, short:`Spelling Word List ${n}`, names:{city:`Neighborhood ${n}`,space:`Sector ${n}`,castle:`Village ${n}`,chess:`Chess Club ${n}`,diving:`Reef ${n}`}, icons:{city:'🏘️',space:'🪐',castle:'🏡',chess:'♟️',diving:'🐠'}}; }
+  for (const d of ZONE_DEFS) if (d.match.test(c)) return d;
+  return {id:'z-'+c.replace(/[^a-z0-9]+/g,'-'), group:'other', order:900, short:col, names:{city:col,space:col,castle:col,chess:col,diving:col}, icons:{city:'📦',space:'📦',castle:'📦',chess:'📦',diving:'📦'}};
+}
+function buildCatalog(names){
+  const seen = new Set(), zm = new Map(); SETS = [];
+  for (const raw of names){
+    const name = raw.trim(); const k = name.toLowerCase();
+    if (!name || seen.has(k)) continue; seen.add(k);
+    const p = parseSet(name), def = zoneDefFor(p.collection);
+    if (!zm.has(def.id)) zm.set(def.id, {...def, sets:[]});
+    const s = {id:SETS.length, name, zoneId:def.id, num:p.num, label:p.label};
+    SETS.push(s); zm.get(def.id).sets.push(s);
+  }
+  ZONES = [...zm.values()].sort((a,b)=> a.order-b.order || a.short.localeCompare(b.short));
+  for (const z of ZONES){
+    z.sets.sort((a,b)=> (a.num||0)-(b.num||0) || a.id-b.id);
+    z.sets.forEach((s,i)=>{ s.pos = i+1; s.display = (!s.label || /^set\s*\d+$/i.test(s.label)) ? `Set ${s.num||i+1}` : s.label; });
+  }
+  ZONE_BY_ID = Object.fromEntries(ZONES.map(z=>[z.id,z]));
+  SET_BY_NAME = Object.fromEntries(SETS.map(s=>[s.name,s]));
+}
+const theme = () => (S.styleDraft || D().player).theme;
+const zoneName = z => z.names[theme()] || z.short;
+const zoneIcon = z => z.icons[theme()] || '📦';
+const setTitle = s => `${ZONE_BY_ID[s.zoneId].short} · ${s.display}`;
+
+/* ================= data model ================= */
+function newData(){
+  return {schemaVersion:SCHEMA_VERSION, savedAt:nowIso(), label:'New game', device:deviceName(), appVersion:APP_VERSION,
+    player:{name:'', theme:'city', mainColor:'blue', accentColor:'yellow', mode:'day'},
+    settings:{dailyGoal:2, beeDate:'', focusZone:'', sound:true, pinHash:''},
+    sets:{}};
+}
+const newDoc = () => ({app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:newData(), versions:[]});
+function normalizeData(x){
+  if (!x || typeof x !== 'object' || !x.sets || typeof x.sets !== 'object') throw new Error('Missing progress data');
+  const d = newData(); const sets = {};
+  for (const [name,r] of Object.entries(x.sets)){
+    if (!r || typeof r !== 'object') continue;
+    sets[name] = {
+      studied:(Array.isArray(r.studied)?r.studied:[]).filter(v=>typeof v==='string' && !isNaN(Date.parse(v))),
+      quizzes:(Array.isArray(r.quizzes)?r.quizzes:[]).filter(q=>q && !isNaN(Date.parse(q.date))).map(q=>({date:q.date, score:Math.max(0,Math.min(100,Number(q.score)||0))}))
+    };
+  }
+  const player = {...d.player, ...(x.player||{})};
+  if (!THEMES[player.theme]) player.theme = 'city';
+  if (!BRICK_COLORS[player.mainColor]) player.mainColor = 'blue';
+  if (!BRICK_COLORS[player.accentColor]) player.accentColor = 'yellow';
+  if (player.mode !== 'night') player.mode = 'day';
+  const settings = {...d.settings, ...(x.settings||{})};
+  settings.dailyGoal = Math.max(1, Math.min(10, parseInt(settings.dailyGoal)||2));
+  return {...d, ...x, schemaVersion:SCHEMA_VERSION, savedAt: (typeof x.savedAt==='string' && !isNaN(Date.parse(x.savedAt))) ? x.savedAt : d.savedAt, label:String(x.label||'Saved'), player, settings, sets};
+}
+function normalizeDoc(raw){
+  const o = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  if (!o || !APP_IDS.includes(o.app) || !o.current) throw new Error('This is not a SpellCoach save file.');
+  if ((o.schemaVersion||1) > SCHEMA_VERSION) throw new Error('This save file comes from a newer version of SpellCoach. Please update SpellCoach.html.');
+  const versions = (Array.isArray(o.versions)?o.versions:[]).map(v=>{ try { return normalizeData(v); } catch { return null; } }).filter(Boolean).slice(0, MAX_VERSIONS);
+  return {app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:normalizeData(o.current), versions};
+}
+const isFresh = doc => doc.versions.length === 0 && Object.keys(doc.current.sets).length === 0;
+
+/* ================= progress math ================= */
+function passDays(rec){ return (rec?.quizzes||[]).filter(q=>q.score>=PASS_SCORE).map(q=>dayKey(q.date)).sort(); }
+function setStatus(rec){
+  if (!rec) return 'none';
+  const p = passDays(rec);
+  if (p.length >= 2 && dayNum(p[p.length-1]) - dayNum(p[0]) >= GOLD_DAYS) return 'gold';
+  if (p.length) return 'passed';
+  if ((rec.studied||[]).length || (rec.quizzes||[]).length) return 'studied';
+  return 'none';
+}
+function goldDue(rec){ const p = passDays(rec); return p.length ? addDays(p[0], GOLD_DAYS) : null; }
+function allEvents(data){
+  const ev = [];
+  for (const [name,r] of Object.entries(data.sets)){
+    r.studied.forEach(d=>ev.push({type:'study', date:d, name}));
+    r.quizzes.forEach(q=>ev.push({type:'quiz', date:q.date, score:q.score, name}));
+  }
+  return ev.sort((a,b)=> a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+}
+function computeStats(data){
+  const ev = allEvents(data), byDay = {};
+  ev.forEach(e=>{ const k = dayKey(e.date); (byDay[k] = byDay[k] || []).push(e); });
+  const goal = data.settings.dailyGoal || 2;
+  let studs = 0; const goalDays = new Set();
+  for (const [k,list] of Object.entries(byDay)){
+    // Repeat taps on the same set in one day earn studs only once, so studs reflect real work.
+    const studied = new Set(), best = {};
+    list.forEach(e=>{ if (e.type==='study') studied.add(e.name); else best[e.name] = Math.max(best[e.name] ?? -1, e.score); });
+    studs += studied.size * 10;
+    Object.values(best).forEach(s=> studs += 20 + (s >= PASS_SCORE ? 10 : 0));
+    if (new Set(list.map(e=>e.name)).size >= goal){ studs += 25; goalDays.add(k); }
+  }
+  const counts = {none:0, studied:0, passed:0, gold:0}, status = {};
+  for (const s of SETS){ const st = setStatus(data.sets[s.name]); status[s.name] = st; counts[st]++; }
+  studs += counts.gold * 50;
+  const days = new Set(Object.keys(byDay));
+  let streak = 0, k = todayKey(); if (!days.has(k)) k = addDays(k,-1);
+  while (days.has(k)){ streak++; k = addDays(k,-1); }
+  const todaySets = [...new Set((byDay[todayKey()]||[]).map(e=>e.name))];
+  return {ev, byDay, goal, goalDays, studs, counts, status, streak, todaySets, total:SETS.length, started:SETS.length - counts.none};
+}
+function zoneProgress(z, st){ let started=0, gold=0, passed=0; z.sets.forEach(s=>{ const x=st.status[s.name]; if (x!=='none') started++; if (x==='gold') gold++; if (x==='passed'||x==='gold') passed++; }); return {started, gold, passed, total:z.sets.length}; }
+function orderedSets(){
+  const f = D().settings.focusZone;
+  const fz = ZONE_BY_ID[f];
+  return [...(fz ? fz.sets : []), ...ZONES.filter(z=>z.id!==f).flatMap(z=>z.sets)];
+}
+function todayPlan(st){
+  const done = st.todaySets.map(n=>SET_BY_NAME[n]).filter(Boolean);
+  const doneSet = new Set(done.map(s=>s.name));
+  const need = done.length >= st.goal ? 1 : st.goal - done.length;
+  const all = orderedSets();
+  const finish = all.filter(s=> st.status[s.name]==='studied' && !doneSet.has(s.name)).slice(0, 1);
+  const fresh = all.filter(s=> st.status[s.name]==='none' && !doneSet.has(s.name));
+  const next = [...finish, ...fresh].slice(0, need);
+  const t = todayKey();
+  const gold = all.filter(s=> st.status[s.name]==='passed' && !doneSet.has(s.name) && goldDue(D().sets[s.name]) <= t).slice(0, 3);
+  return {done, next, gold, bonus: done.length >= st.goal};
+}
+
+/* ================= storage ================= */
+let idb = null;
+// Database name predates the rename; keeping it preserves progress already saved in the browser.
+function idbOpen(){ return new Promise((res,rej)=>{ const r = indexedDB.open('brickquest', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function kvGet(k){
+  try { idb = idb || await idbOpen(); return await new Promise((res,rej)=>{ const q = idb.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); }
+  catch { try { const v = localStorage.getItem('bq:'+k); return v ? JSON.parse(v) : undefined; } catch { return undefined; } }
+}
+async function kvSet(k,v){
+  try { idb = idb || await idbOpen(); await new Promise((res,rej)=>{ const tx = idb.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+  catch { try { if (typeof v === 'string' || typeof v === 'object' && !(v instanceof FileSystemHandle)) localStorage.setItem('bq:'+k, JSON.stringify(v)); } catch {} }
+}
+async function kvDel(k){ try { idb = idb || await idbOpen(); await new Promise(res=>{ const tx = idb.transaction('kv','readwrite'); tx.objectStore('kv').delete(k); tx.oncomplete = res; tx.onerror = res; }); } catch {} }
+
+let writeChain = Promise.resolve();
+function persist(){
+  const json = JSON.stringify(S.doc, null, 2);
+  writeChain = writeChain.then(()=>doPersist(json)).catch(e=>{ console.error(e); });
+  return writeChain;
+}
+async function doPersist(json){
+  if (S.testMode) { S.save = 'local'; return; }
+  await kvSet('doc', json);
+  if (S.dir && S.dirStatus === 'granted'){
+    try { await writeFolder(json); S.save = 'file'; S.meta.lastFileSave = nowIso(); await kvSet('meta', S.meta); }
+    catch (e){ console.error(e); S.save = 'error'; try { S.dirStatus = await S.dir.queryPermission({mode:'readwrite'}); } catch {} }
+  } else S.save = 'local';
+  updateSaveChip();
+}
+async function writeText(handle, text){ const w = await handle.createWritable(); await w.write(text); await w.close(); }
+async function writeFolder(json){
+  const fh = await S.dir.getFileHandle(FILE_NAME, {create:true});
+  try {
+    const old = await (await fh.getFile()).text();
+    if (old && old.trim() && old !== json) await writeText(await S.dir.getFileHandle(BAK_NAME, {create:true}), old);
+  } catch {}
+  await writeText(fh, json);
+}
+async function readFolderDoc(){
+  let main = null, bak = null, damaged = false, exists = false;
+  try { const fh = await S.dir.getFileHandle(FILE_NAME); exists = true; main = normalizeDoc(await (await fh.getFile()).text()); }
+  catch (e){ if (exists || e.name !== 'NotFoundError') damaged = exists; }
+  if (!main && !exists){ try { main = normalizeDoc(await (await (await S.dir.getFileHandle(LEGACY_FILE_NAME)).getFile()).text()); } catch {} }
+  if (damaged){ try { bak = normalizeDoc(await (await (await S.dir.getFileHandle(BAK_NAME)).getFile()).text()); } catch {} }
+  return {main, bak, damaged, exists};
+}
+async function loadFolderWordList(){
+  try {
+    const txt = await (await (await S.dir.getFileHandle(WORDLIST_FILE)).getFile()).text();
+    const known = new Set(SETS.map(s=>s.name.toLowerCase()));
+    const extra = parseListNames(txt).filter(n=>!known.has(n.toLowerCase()));
+    if (extra.length){ S.extraNames = [...S.extraNames, ...extra]; buildCatalog([...parseListNames(WORD_LIST_TEXT), ...S.extraNames]); toast(`Found ${plural(extra.length,'new word list')} in the save folder`); }
+  } catch {}
+}
+async function syncFromFolder(){
+  const {main, bak, damaged} = await readFolderDoc();
+  await loadFolderWordList();
+  const fileDoc = main || bak;
+  if (damaged) toast(bak ? 'The save file was damaged, so the backup copy was used.' : "The save file was damaged, so this device's copy was used.");
+  if (fileDoc && fileDoc.current.savedAt > S.doc.current.savedAt){
+    S.doc = fileDoc; await kvSet('doc', JSON.stringify(S.doc)); applyTheme(D().player);
+    if (!damaged) toast('Loaded your latest progress from the save file');
+  }
+  if (!main || damaged || fileDoc.current.savedAt !== S.doc.current.savedAt) await persist();
+  else { S.save = 'file'; updateSaveChip(); }
+  render();
+}
+async function connectFolder(){
+  if (!('showDirectoryPicker' in window)) return toast('This browser cannot connect a folder. Use Save to Files instead.');
+  let dir;
+  try { dir = await window.showDirectoryPicker({id:'spellcoach', mode:'readwrite'}); }
+  catch (e){ if (e.name !== 'AbortError') toast('Could not open that folder: ' + e.message); return; }
+  S.dir = dir; S.dirStatus = 'granted'; await kvSet('dir', dir);
+  const {main, bak} = await readFolderDoc();
+  await loadFolderWordList();
+  const fileDoc = main || bak;
+  if (!fileDoc || isFresh(fileDoc)){ await persist(); toast(`Connected! Progress now saves to ${FILE_NAME}`); render(); return; }
+  if (isFresh(S.doc) || fileDoc.current.savedAt === S.doc.current.savedAt){ S.doc = fileDoc; await persist(); applyTheme(D().player); toast('Connected and loaded the save file'); render(); return; }
+  S.pendingFileDoc = fileDoc;
+  openModal({type:'choice'});
+}
+async function reconnect(){
+  if (!S.dir) return connectFolder();
+  try { S.dirStatus = await S.dir.requestPermission({mode:'readwrite'}); } catch (e){ toast('Could not reconnect: ' + e.message); }
+  if (S.dirStatus === 'granted'){ await syncFromFolder(); toast('Save file reconnected'); }
+  render();
+}
+async function disconnectFolder(){ S.dir = null; S.dirStatus = 'none'; await kvDel('dir'); await persist(); render(); toast('Save folder disconnected. Progress saves in this browser.'); }
+async function adoptDoc(fileDoc, label){
+  const versions = [clone(S.doc.current), ...fileDoc.versions].slice(0, MAX_VERSIONS);
+  const cur = clone(fileDoc.current); cur.label = label; cur.savedAt = nowIso(); cur.device = deviceName();
+  S.doc = {app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:cur, versions};
+  applyTheme(D().player); await persist(); render();
+}
+function downloadText(name, text, type){
+  const url = URL.createObjectURL(new Blob([text], {type}));
+  const a = Object.assign(document.createElement('a'), {href:url, download:name});
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+async function exportFile(){
+  const json = JSON.stringify(S.doc, null, 2);
+  const file = new File([json], FILE_NAME, {type:'application/json'});
+  if (isIOS() && navigator.canShare && navigator.canShare({files:[file]})){
+    try { await navigator.share({files:[file], title:'SpellCoach progress'}); }
+    catch (e){ if (e.name === 'AbortError') return; downloadText(FILE_NAME, json, 'application/json'); }
+  } else downloadText(FILE_NAME, json, 'application/json');
+  S.meta.lastExport = nowIso(); await kvSet('meta', S.meta);
+  toast('Progress file saved'); render();
+}
+async function importFile(file){
+  let doc;
+  try { doc = normalizeDoc(await file.text()); }
+  catch (e){ openModal({type:'confirm', title:'Could not open that file', body:esc(e.message || 'The file is damaged.'), yes:'OK', noCancel:true}); return; }
+  const go = () => adoptDoc(doc, `Opened save file (${deviceName()})`).then(()=>toast('Save file loaded'));
+  if (doc.current.savedAt < S.doc.current.savedAt){
+    openModal({type:'confirm', title:'This file is older', danger:true,
+      body:`This file was saved <b>${esc(fmtDT(doc.current.savedAt))}</b>, but this device has newer progress from <b>${esc(fmtDT(D().savedAt))}</b>.<br><br>Load the older file anyway? Your current progress will be kept as a version you can restore.`,
+      yes:'Load older file', onYes:go});
+  } else await go();
+}
+
+/* ================= versioned changes ================= */
+async function commit(label, mutate){
+  const prev = clone(S.doc.current);
+  const next = clone(prev);
+  mutate(next);
+  next.savedAt = nowIso(); next.label = label; next.device = deviceName(); next.appVersion = APP_VERSION;
+  S.doc.versions.unshift(prev);
+  S.doc.versions = S.doc.versions.slice(0, MAX_VERSIONS);
+  S.doc.current = next;
+  await persist();
+}
+async function restoreVersion(i, label){
+  const target = clone(S.doc.versions[i]);
+  if (!target) return;
+  await commit(label || `Restored version from ${fmtDT(target.savedAt)}`, d=>{ for (const k of Object.keys(d)) delete d[k]; Object.assign(d, target); });
+  applyTheme(D().player);
+}
+async function undoLast(){ if (!S.doc.versions.length) return; await restoreVersion(0, `Undo: ${D().label}`); S.modal = null; render(); toast('Undone!'); }
+const rec = (d,name) => d.sets[name] = d.sets[name] || {studied:[], quizzes:[]};
+
+async function markStudied(name){
+  if (S.busy) return; S.busy = true;
+  try {
+    const before = computeStats(D());
+    await commit(`Studied ${setTitle(SET_BY_NAME[name])}`, d=> rec(d,name).studied.push(nowIso()));
+    celebrate('study', name, before);
+  } finally { S.busy = false; }
+}
+async function markQuiz(name, score){
+  if (S.busy) return; S.busy = true;
+  try {
+    const before = computeStats(D());
+    await commit(`Quiz ${score}% on ${setTitle(SET_BY_NAME[name])}`, d=> rec(d,name).quizzes.push({date:nowIso(), score}));
+    celebrate('quiz', name, before, score);
+  } finally { S.busy = false; }
+}
+
+/* ================= sound & confetti ================= */
+let actx = null;
+function sfx(kind){
+  if (!D().settings.sound || S.testMode) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime;
+    const tone = (f, at, dur, type='triangle', vol=.12) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.setValueAtTime(f, t+at); g.gain.setValueAtTime(vol, t+at); g.gain.exponentialRampToValueAtTime(.0001, t+at+dur); o.connect(g).connect(actx.destination); o.start(t+at); o.stop(t+at+dur+.02); };
+    if (kind === 'tap') tone(700, 0, .05, 'square', .04);
+    if (kind === 'snap'){ tone(1900, 0, .03, 'square', .08); tone(950, .035, .05, 'square', .07); }
+    if (kind === 'win'){ [523,659,784,1047].forEach((f,i)=>tone(f, .08+i*.09, .22, 'triangle', .13)); tone(1568, .5, .35, 'sine', .08); }
+    if (kind === 'gold'){ [784,988,1175,1568,1976].forEach((f,i)=>tone(f, i*.08, .3, 'triangle', .12)); }
+    if (kind === 'oops') tone(220, 0, .2, 'sawtooth', .05);
+  } catch {}
+}
+function confetti(n=70){
+  if (S.testMode) return;
+  const box = document.createElement('div'); box.className = 'confetti';
+  const p = S.styleDraft || D().player;
+  const cols = [BRICK_COLORS[p.mainColor].hex, BRICK_COLORS[p.accentColor].hex, '#D01012','#0055BF','#F2CD37','#00852B','#FE8A18','#F5C518'];
+  for (let i=0;i<n;i++){
+    const c = document.createElement('i');
+    c.style.left = (Math.random()*100)+'vw';
+    c.style.background = cols[i % cols.length];
+    c.style.animationDuration = (1.6 + Math.random()*1.6)+'s';
+    c.style.animationDelay = (Math.random()*.5)+'s';
+    c.style.setProperty('--r', (Math.random()*900-450)+'deg');
+    box.appendChild(c);
+  }
+  document.body.appendChild(box); setTimeout(()=>box.remove(), 4200);
+}
+function celebrate(kind, name, before, score){
+  const after = computeStats(D());
+  const goalHit = before.todaySets.length < after.goal && after.todaySets.length >= after.goal;
+  const newGold = before.status[name] !== 'gold' && after.status[name] === 'gold';
+  openModal({type:'celebrate', kind, name, score, studs:after.studs - before.studs, goalHit, newGold, streak:after.streak});
+  sfx('snap'); setTimeout(()=>sfx(newGold ? 'gold' : 'win'), 250);
+  confetti(newGold || goalHit ? 120 : 70);
+}
+
+/* ================= theme ================= */
+function applyTheme(p){
+  const root = document.documentElement;
+  const M = BRICK_COLORS[p.mainColor].hex, A = BRICK_COLORS[p.accentColor].hex;
+  const night = p.mode === 'night';
+  const bg = night ? '#0B1222' : '#EAF1FB';
+  root.dataset.mode = night ? 'night' : 'day';
+  root.dataset.theme = p.theme;
+  const set = (k,v) => root.style.setProperty(k,v);
+  set('--main', M); set('--main-text', textOn(M)); set('--accent', A); set('--accent-text', textOn(A));
+  set('--scene1', mix(M, bg, night ? .55 : .72)); set('--scene2', mix(M, bg, night ? .72 : .84));
+  set('--scene3', mix(A, bg, night ? .45 : .55)); set('--scene4', mix(A, bg, night ? .7 : .8));
+  set('--scenew', night ? 'rgba(255,230,140,.75)' : 'rgba(255,255,255,.85)');
+  const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.content = M;
+  const key = p.theme + p.mode;
+  if (S.sceneKey !== key){ S.sceneKey = key; $('#scenery').innerHTML = sceneSVG(p.theme, night); }
+}
+function sceneSVG(t, night){
+  const r = rng({city:7, space:11, castle:3, chess:5, diving:9}[t] || 1);
+  let s = '<svg viewBox="0 0 1200 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true">';
+  if (t === 'city'){
+    for (let pass=0; pass<2; pass++){
+      let x = -20;
+      while (x < 1220){
+        const w = 60 + r()*70, h = (pass ? 90 : 150) + r()*(pass ? 140 : 190);
+        s += `<rect class="${pass?'sc1':'sc2'}" x="${x}" y="${400-h}" width="${w}" height="${h}" rx="4"/>`;
+        if (pass) for (let wy = 400-h+16; wy < 380; wy += 26) for (let wx = x+10; wx < x+w-16; wx += 20) if (r() > (night ? .45 : .7)) s += `<rect class="scw" x="${wx}" y="${wy}" width="9" height="12" rx="2"/>`;
+        x += w + (pass ? 6 : 14);
+      }
+    }
+    s += '<rect class="sc3" x="0" y="384" width="1200" height="16"/>';
+  } else if (t === 'space'){
+    for (let i=0;i<120;i++) s += `<circle class="scw" cx="${r()*1200}" cy="${r()*300}" r="${(r()*1.8+.4).toFixed(2)}" opacity="${(r()*.7+.3).toFixed(2)}"/>`;
+    s += '<circle class="sc3" cx="960" cy="120" r="70"/><ellipse class="sc4" cx="960" cy="120" rx="125" ry="22" fill-opacity=".8"/><circle class="sc3" cx="960" cy="112" r="70" clip-path="inset(0 0 50% 0)"/>';
+    s += '<circle class="sc4" cx="210" cy="90" r="26"/>';
+    s += '<path class="sc2" d="M0 330 Q300 280 600 320 T1200 300 V400 H0Z"/><path class="sc1" d="M0 360 Q350 320 700 355 T1200 345 V400 H0Z"/>';
+    s += '<circle class="sc2" cx="300" cy="372" r="16"/><circle class="sc2" cx="820" cy="380" r="11"/><circle class="sc2" cx="1050" cy="368" r="20"/>';
+    s += '<rect class="sc3" x="520" y="250" width="24" height="70" rx="12"/><path class="sc3" d="M520 300 l-16 22 h16z M544 300 l16 22 h-16z"/>';
+  } else if (t === 'chess'){
+    for (let row=0; row<3; row++) for (let col=0; col<20; col++) s += `<rect class="${(row+col)%2?'sc1':'sc4'}" x="${col*60}" y="${220+row*60}" width="60" height="60"/>`;
+    s += '<path class="sc2" d="M150 220 h70 l-8 -14 h-54z M160 206 q4 -40 25 -50 q-16 -8 -16 -24 a16 16 0 1 1 32 0 q0 16 -16 24 q21 10 25 50z"/>';
+    s += '<path class="sc2" d="M860 220 h90 l-10 -16 h-70z M872 204 l8 -90 h50 l8 90z M876 114 h58 v-26 h-10 v10 h-8 v-10 h-12 v10 h-8 v-10 h-10 v10 h-10z"/>';
+    s += '<path class="sc3" d="M520 220 h100 l-10 -18 h-80z M535 202 l10 -110 h50 l10 110z M540 92 q30 -26 60 0z M566 66 v-34 M552 46 h28" stroke-width="9" stroke-linecap="round"/><rect class="sc3" x="561" y="22" width="10" height="44" rx="3"/><rect class="sc3" x="546" y="36" width="40" height="10" rx="3"/>';
+    s += '<path class="sc2" d="M1080 220 h80 l-8 -14 h-64z M1092 206 l4 -50 q-26 -6 -18 -40 q10 -36 48 -40 q-4 10 4 14 q20 14 16 66 l2 50z"/>';
+  } else if (t === 'diving'){
+    for (let i=0;i<6;i++){ const x = i*220 + r()*60; s += `<path class="scw" opacity=".12" d="M${x} 0 h60 l${80+r()*60} 400 h-${140+r()*40}z"/>`; }
+    for (let i=0;i<40;i++) s += `<circle cx="${r()*1200}" cy="${r()*360}" r="${(r()*5+2).toFixed(1)}" fill="none" stroke="var(--scenew)" stroke-width="1.5" opacity="${(r()*.5+.3).toFixed(2)}"/>`;
+    for (let i=0;i<7;i++){ const x = 40+r()*1120, y = 80+r()*200, w = 30+r()*30, dir = r()>.5?1:-1; s += `<g class="sc3" transform="translate(${x} ${y}) scale(${dir} 1)"><ellipse cx="0" cy="0" rx="${w}" ry="${w*.45}"/><path d="M${w*.8} 0 l${w*.55} -${w*.4} v${w*.8}z"/></g><circle cx="${x - dir*w*.5}" cy="${y-3}" r="3" class="scw"/>`; }
+    for (let i=0;i<14;i++){ const x = r()*1200, h = 70+r()*120; s += `<path class="sc2" d="M${x} 400 q-18 -${h*.3} 0 -${h*.55} t0 -${h*.45} q8 ${h*.4} 8 ${h} z"/>`; }
+    s += '<path class="sc4" d="M0 360 Q300 330 600 362 T1200 350 V400 H0Z"/>';
+    for (let i=0;i<8;i++){ const x = 60+r()*1080; s += `<path class="sc1" d="M${x} 370 v-30 m0 10 l-14 -16 m14 26 l14 -20 m-14 4 l6 -22" stroke="var(--scene1)" stroke-width="8" stroke-linecap="round" fill="none"/>`; }
+    s += '<path class="sc1" d="M820 372 h150 l-20 22 h-110z"/><rect class="sc1" x="888" y="300" width="8" height="72"/><path class="sc1" d="M896 304 l50 40 h-50z"/>';
+  } else {    s += '<path class="sc2" d="M0 300 Q200 220 420 290 T860 270 T1200 280 V400 H0Z"/>';
+    const cx = 700;
+    s += `<rect class="sc1" x="${cx}" y="190" width="260" height="170"/>`;
+    for (const tx of [cx-40, cx+260]) s += `<rect class="sc1" x="${tx}" y="130" width="60" height="230"/><path class="sc1" d="M${tx} 130 h12 v-14 h12 v14 h12 v-14 h12 v14 h12 v-14 h0z"/>`;
+    for (let i=0;i<11;i++) s += `<rect class="sc1" x="${cx+i*24}" y="176" width="14" height="16"/>`;
+    s += `<rect class="sc1" x="${cx+105}" y="110" width="50" height="90"/><rect x="${cx+128}" y="60" width="4" height="52" class="sc3"/><path class="sc3" d="M${cx+132} 60 l40 12 l-40 12z"/>`;
+    s += `<path class="sc2" d="M${cx+100} 360 v-60 a30 30 0 0 1 60 0 v60z"/>`;
+    s += '<path class="sc1" d="M0 350 Q300 300 620 352 T1200 340 V400 H0Z"/>';
+    for (let i=0;i<10;i++){ const x = 40+i*60+r()*20; s += `<circle class="sc3" cx="${x}" cy="${336-r()*20}" r="${16+r()*10}"/>`; }
+  }
+  return s + '</svg>';
+}
+function minifig(p, size=120, pose='stand'){
+  const M = BRICK_COLORS[p.mainColor].hex, A = BRICK_COLORS[p.accentColor].hex, skin = '#F6D13C', ink = '#1B2A34';
+  const dark = mix(M,'#000000',.25), legs = mix(A,'#000000',.1);
+  const up = pose === 'cheer';
+  const arm = (x, cx, rot) => `<g transform="rotate(${rot} ${cx} 58)"><rect x="${x}" y="54" width="15" height="31" rx="7" fill="${M}"/><path d="M${x+1} 84 h13 v4 h-13z" fill="${dark}"/><circle cx="${x+7.5}" cy="92" r="6.5" fill="${skin}"/></g>`;
+  let hat = '', emblem = '';
+  if (p.theme === 'city'){
+    hat = `<path d="M29 24 Q29 7 50 7 Q71 7 71 24 Z" fill="${A}"/><rect x="48" y="20" width="32" height="7" rx="3.5" fill="${mix(A,'#000000',.25)}"/><circle cx="50" cy="8" r="3" fill="${mix(A,'#000000',.25)}"/>`;
+    emblem = `<rect x="40" y="64" width="20" height="14" rx="3" fill="${A}"/><path d="M44 71 l4 4 l8 -8" stroke="${textOn(A)}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  } else if (p.theme === 'space'){
+    hat = `<rect x="24" y="5" width="52" height="50" rx="22" fill="rgba(170,220,255,.22)" stroke="#E8EEF6" stroke-width="5"/><rect x="47" y="-6" width="6" height="12" rx="3" fill="#E8EEF6"/><circle cx="50" cy="-7" r="4" fill="${A}"/>`;
+    emblem = `<circle cx="50" cy="71" r="8" fill="${A}"/><ellipse cx="50" cy="71" rx="14" ry="4" fill="none" stroke="#fff" stroke-width="2"/>`;
+  } else if (p.theme === 'chess'){
+    const band = mix(A,'#000000',.25);
+    hat = `<path d="M29 22 L32 2 L41 12 L50 -2 L59 12 L68 2 L71 22 Z" fill="${A}"/><rect x="29" y="18" width="42" height="7" rx="2" fill="${band}"/><circle cx="50" cy="-3" r="3.5" fill="${band}"/><circle cx="32" cy="2" r="2.5" fill="${band}"/><circle cx="68" cy="2" r="2.5" fill="${band}"/>`;
+    emblem = `<rect x="40" y="62" width="20" height="20" rx="2" fill="#F4F4F4"/><rect x="40" y="62" width="10" height="10" fill="#1B2A34"/><rect x="50" y="72" width="10" height="10" fill="#1B2A34"/><rect x="40" y="62" width="20" height="20" rx="2" fill="none" stroke="${A}" stroke-width="2"/>`;
+  } else if (p.theme === 'diving'){
+    hat = `<rect x="29" y="27" width="4" height="7" rx="1" fill="${A}"/><rect x="67" y="27" width="4" height="7" rx="1" fill="${A}"/><rect x="32" y="21" width="36" height="16" rx="7" fill="rgba(150,215,255,.5)" stroke="${A}" stroke-width="3.5"/><path d="M71 36 V4 Q71 -2 77 -2" stroke="${A}" stroke-width="4.5" fill="none" stroke-linecap="round"/><circle cx="83" cy="-6" r="2.5" fill="none" stroke="#9fd8ff" stroke-width="1.5"/><circle cx="88" cy="-12" r="1.8" fill="none" stroke="#9fd8ff" stroke-width="1.5"/>`;
+    emblem = `<path d="M50 61 v20 M43 66 h14 M41 75 q9 10 18 0" stroke="${A}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="50" cy="60" r="3" fill="none" stroke="${A}" stroke-width="2.5"/>`;
+  } else {    hat = `<path d="M28 33 Q28 5 50 5 Q72 5 72 33 L72 22 Q50 16 28 22Z" fill="#B8C2CC"/><rect x="47" y="18" width="6" height="18" rx="2" fill="#9AA5B1"/><path d="M50 6 Q60 -10 74 -4 Q62 -2 56 8Z" fill="${A}"/>`;
+    emblem = `<path d="M40 61 h20 v10 q0 10 -10 14 q-10 -4 -10 -14z" fill="${A}"/><path d="M50 63 v19 M42 70 h16" stroke="${textOn(A)}" stroke-width="2.5"/>`;
+  }
+  return `<svg class="fig" width="${size}" height="${Math.round(size*1.4)}" viewBox="0 -12 100 152" aria-hidden="true">
+    ${arm(14, 28, up ? 160 : 12)}${arm(71, 72, up ? -160 : -12)}
+    <path d="M31 53 H69 L77 98 H23 Z" fill="${M}"/>${emblem}
+    <rect x="23" y="97" width="54" height="10" rx="2" fill="${dark}"/>
+    <rect x="23" y="106" width="26" height="31" rx="3" fill="${legs}"/><rect x="51" y="106" width="26" height="31" rx="3" fill="${legs}"/>
+    <rect x="43" y="46" width="14" height="9" fill="${skin}"/>
+    <rect x="40" y="6" width="20" height="9" rx="3" fill="${skin}"/>
+    <rect x="30" y="13" width="40" height="36" rx="10" fill="${skin}"/>
+    <ellipse cx="43" cy="29" rx="2.8" ry="3.4" fill="${ink}"/><ellipse cx="57" cy="29" rx="2.8" ry="3.4" fill="${ink}"/>
+    <path d="${up ? 'M41 37 Q50 47 59 37 Z' : 'M42 38 Q50 44 58 38'}" stroke="${ink}" stroke-width="2.6" fill="${up ? '#fff' : 'none'}" stroke-linecap="round"/>
+    ${hat}
+  </svg>`;
+}
+
+/* ================= app state ================= */
+const S = {doc:null, meta:{}, screen:'today', zoneId:null, modal:null, parentOk:false, editMode:false, cal:null, calDay:null, styleDraft:null,
+  dir:null, dirStatus:'none', save:'local', busy:false, extraNames:[], pendingFileDoc:null, pin:'', pinFirst:'', testMode:false, sceneKey:''};
+const D = () => S.doc.current;
+function openModal(m){ S.modal = m; render(); }
+function closeModal(){ S.modal = null; render(); }
+let toastTimer = null;
+function toast(msg, undo){
+  let t = $('#toast'); if (t) t.remove();
+  t = document.createElement('div'); t.id = 'toast'; t.className = 'toast';
+  t.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button data-act="undo">Undo</button>' : ''}`;
+  document.body.appendChild(t); clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.remove(), undo ? 7000 : 3800);
+}
+
+/* ================= rendering ================= */
+function saveChip(){
+  if (S.dir && S.dirStatus === 'granted' && S.save !== 'error') return `<span class="chip good" title="Saving to ${FILE_NAME}"><span class="dot"></span><span class="savetxt">Saved</span></span>`;
+  if (S.dir && S.dirStatus !== 'granted') return `<button class="chip btn warn" data-act="reconnect">Tap to reconnect save</button>`;
+  if (S.save === 'error') return `<button class="chip btn err" data-act="reconnect">Save problem</button>`;
+  return `<span class="chip" title="Saved in this browser"><span class="dot"></span><span class="savetxt">${isIOS() ? 'Saved on iPad' : 'Saved in browser'}</span></span>`;
+}
+function updateSaveChip(){ const el = $('#savechip'); if (el) el.innerHTML = saveChip(); }
+function header(st){
+  const p = S.styleDraft || D().player;
+  return `<header class="top"><div class="wrap">
+    <div class="logo"><span class="lb"><i style="background:#D01012"></i><i style="background:#F2CD37"></i><i style="background:#0055BF"></i></span><span class="txt">SpellCoach</span></div>
+    <div class="chips">
+      <span class="chip" title="Days in a row">🔥 ${st.streak}</span>
+      <span class="chip" title="Studs"><span class="stud"></span>${st.studs.toLocaleString()}</span>
+      <span id="savechip">${saveChip()}</span>
+    </div></div></header>`;
+}
+function nav(){
+  const items = [['today','🧱','Today'],['map','🗺️','Map'],['calendar','📅','Calendar'],['style','🎨','My Style'],['parents', S.parentOk ? '🔓' : '🔒','Parents']];
+  const cur = S.screen === 'zone' ? 'map' : S.screen;
+  return `<nav class="bottom">${items.map(([id,ic,l])=>`<button data-act="nav" data-to="${id}" class="${cur===id?'on':''}"><span class="ico">${ic}</span>${l}</button>`).join('')}</nav>`;
+}
+function missionCard(s, st, kind){
+  const z = ZONE_BY_ID[s.zoneId], status = st.status[s.name];
+  const sub = kind === 'gold' ? 'Gold Brick challenge: retake the quiz' : status === 'studied' ? 'Studied. Now take the quiz!' : status === 'passed' ? 'Quiz passed' : 'New build';
+  const right = kind === 'done' ? `<span class="done-tag">✅ Done today</span>` :
+    `<button class="brick ${kind==='gold'?'gold':'accent'} go" data-act="openSet" data-id="${s.id}">${kind==='gold'?'Go for gold':"Let's build!"}</button>`;
+  return `<div class="card mission"><div class="zicon">${zoneIcon(z)}</div><div><div class="t">${esc(s.display)}</div><div class="s">${esc(zoneName(z))} · ${esc(z.short)} · ${sub}</div></div>${right}</div>`;
+}
+function viewToday(st){
+  const p = D().player, plan = todayPlan(st), doneN = plan.done.length;
+  const name = p.name ? esc(p.name) : THEMES[p.theme].hero;
+  let msg = "Let's build something awesome today!";
+  if (doneN >= st.goal) msg = "You crushed today's goal! Bonus builds earn more studs.";
+  else if (st.streak >= 2) msg = `🔥 ${st.streak}-day streak! Keep it going!`;
+  else if (doneN > 0) msg = `Great start! ${plural(st.goal-doneN,'more build')} to finish today's goal.`;
+  let countdown = '';
+  const bee = D().settings.beeDate;
+  if (bee){ const days = dayNum(bee) - dayNum(todayKey()); if (days >= 0) countdown = `<span class="countdown">🏆 ${days === 0 ? 'Bee day is TODAY!' : `${plural(days,'day')} to the bee!`}</span>`; }
+  const pct = st.total ? Math.round(st.started/st.total*100) : 0;
+  const goalBricks = Array.from({length:Math.max(st.goal, doneN)}, (_,i)=>`<i class="${i<doneN?'on':''}"></i>`).join('');
+  return `<div class="wrap">
+    <section class="card hero">
+      ${minifig(p, 118, doneN >= st.goal ? 'cheer' : 'stand')}
+      <div>
+        <h1>Hi ${name}!</h1>
+        <p>Today's goal: ${doneN} of ${plural(st.goal,'build')} done</p>
+        <div class="goalbricks">${goalBricks}</div>
+        <span class="bubble">${msg}</span>${countdown}
+      </div>
+    </section>
+    <h2 class="section-title">🧱 Today's builds</h2>
+    ${plan.done.map(s=>missionCard(s,st,'done')).join('')}
+    ${plan.next.length ? (plan.bonus ? '<div class="eyebrow" style="margin:18px 0 10px">Bonus build</div>' : '') + plan.next.map(s=>missionCard(s,st,'next')).join('') : (plan.done.length ? '' : '<div class="card">Every set has been started. Amazing! Try a Gold Brick challenge.</div>')}
+    ${plan.gold.length ? `<h2 class="section-title">🥇 Gold Brick challenges</h2><p class="muted" style="margin-top:-6px;font-weight:700">You passed these a week ago. Pass the quiz again to win a Gold Brick (+50 studs)!</p>${plan.gold.map(s=>missionCard(s,st,'gold')).join('')}` : ''}
+    <div class="grid2" style="margin-top:26px">
+      <div class="card">
+        <div class="eyebrow">My building progress</div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin:8px 0 12px"><span class="big-num">${st.started}</span><span class="muted" style="font-weight:800">of ${st.total} sets built (${pct}%)</span></div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="statsrow"><div><span class="mk studied"></span>${st.counts.studied} studied</div><div><span class="mk passed"></span>${st.counts.passed} quiz passed</div><div><span class="mk gold"></span>${st.counts.gold} gold</div></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">My stats</div>
+        <div class="statsrow" style="margin-top:12px;gap:26px">
+          <div style="flex-direction:column;align-items:flex-start"><span class="big-num">🔥${st.streak}</span><span class="muted">day streak</span></div>
+          <div style="flex-direction:column;align-items:flex-start"><span class="big-num">${st.studs.toLocaleString()}</span><span class="muted">studs earned</span></div>
+          <div style="flex-direction:column;align-items:flex-start"><span class="big-num">${st.goalDays.size}</span><span class="muted">goal days</span></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function viewMap(st){
+  const th = THEMES[theme()];
+  const groups = GROUP_ORDER.map(g=>({g, zones:ZONES.filter(z=>z.group===g)})).filter(x=>x.zones.length);
+  return `<div class="wrap">
+    <h1 style="margin-top:24px;font-size:32px">🗺️ ${th.mapTitle}</h1>
+    <p class="muted" style="font-weight:700;margin:6px 0 0">${st.started} of ${st.total} sets built. Tap a zone to see its builds.</p>
+    ${groups.map(({g,zones})=>`<h2 class="section-title">${esc(th.groups[g] || 'More Zones')}</h2><div class="zones">${zones.map(z=>{
+      const zp = zoneProgress(z, st), pct = Math.round(zp.started/zp.total*100);
+      return `<button class="card zone ${zp.started===zp.total?'complete':''}" data-act="zone" data-id="${z.id}">
+        <div style="display:flex;gap:12px;align-items:center"><div class="zicon">${zoneIcon(z)}</div><div><div class="zn">${esc(zoneName(z))}</div><div class="zs" style="margin-top:2px">${esc(z.short)}</div></div></div>
+        <div class="bar sm"><i style="width:${pct}%"></i></div>
+        <div class="zm"><span>${zp.started} / ${zp.total} built</span><span>${zp.gold ? `🥇 ${zp.gold}` : zp.started===zp.total ? '🏆 Complete!' : ''}</span></div>
+      </button>`; }).join('')}</div>`).join('')}
+  </div>`;
+}
+function viewZone(st){
+  const z = ZONE_BY_ID[S.zoneId]; if (!z){ S.screen = 'map'; return viewMap(st); }
+  const zp = zoneProgress(z, st), today = new Set(st.todaySets);
+  return `<div class="wrap">
+    <div class="backrow"><button class="brick ghost sm" data-act="nav" data-to="map">← Map</button></div>
+    <div style="display:flex;gap:16px;align-items:center;margin-top:16px">
+      <div class="zicon" style="width:72px;height:72px;font-size:38px">${zoneIcon(z)}</div>
+      <div style="flex:1"><h1 style="font-size:30px">${esc(zoneName(z))}</h1><div class="muted" style="font-weight:800">${esc(z.short)} · ${zp.started} of ${zp.total} built${zp.gold?` · 🥇 ${zp.gold} gold`:''}</div></div>
+    </div>
+    <div class="bar" style="margin-top:14px"><i style="width:${Math.round(zp.started/zp.total*100)}%"></i></div>
+    <div class="legend"><span><span class="mk none"></span>Not started</span><span><span class="mk studied"></span>Studied</span><span><span class="mk passed"></span>Quiz passed</span><span><span class="mk gold"></span>Gold Brick</span></div>
+    ${S.editMode ? `<div class="editbox"><b>Parent edit:</b> mark every set in this zone as studied on
+      <input type="date" id="bulkdate" value="${todayKey()}" style="font:800 15px var(--font);padding:6px;border-radius:10px"> <button class="brick sm" data-act="bulkStudy" data-id="${z.id}">Mark all studied</button></div>` : ''}
+    <div class="tiles">${z.sets.map(s=>{
+      const x = st.status[s.name], n = x==='none'?0:x==='studied'?1:x==='passed'?2:3;
+      return `<button class="brick tile ${x} ${today.has(s.name)?'today':''}" data-act="openSet" data-id="${s.id}">
+        <span class="n">#${s.pos}</span><span class="l">${esc(s.display)}</span>
+        <span class="marks">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</span></button>`; }).join('')}</div>
+  </div>`;
+}
+function viewCalendar(st){
+  const now = new Date();
+  if (!S.cal) S.cal = [now.getFullYear(), now.getMonth()];
+  const [y,m] = S.cal;
+  const first = new Date(y,m,1), days = new Date(y,m+1,0).getDate(), lead = first.getDay();
+  const tk = todayKey();
+  let cells = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="dow">${d}</div>`).join('');
+  for (let i=0;i<lead;i++) cells += '<div class="blank"></div>';
+  let monthCount = 0;
+  for (let d=1; d<=days; d++){
+    const k = `${y}-${pad(m+1)}-${pad(d)}`, list = st.byDay[k] || [];
+    const n = new Set(list.map(e=>e.name)).size; if (n) monthCount++;
+    cells += `<button class="${n?'has':''} ${st.goalDays.has(k)?'goal':''} ${k===tk?'today':''} ${S.calDay===k?'sel':''}" data-act="calDay" data-k="${k}">${d}${n?`<small>🧱${n}</small>`:''}</button>`;
+  }
+  const sel = S.calDay, list = sel ? (st.byDay[sel] || []) : [];
+  const monthName = first.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  return `<div class="wrap">
+    <h1 style="margin-top:24px;font-size:32px">📅 My Building Calendar</h1>
+    <p class="muted" style="font-weight:700;margin:6px 0 0">Every brick is a day you studied. ★ means you hit your daily goal.</p>
+    <div class="card" style="margin-top:18px">
+      <div class="calhead"><button class="brick ghost sm" data-act="calMove" data-d="-1">◀</button><h2>${monthName}</h2><button class="brick ghost sm" data-act="calMove" data-d="1">▶</button></div>
+      <div class="cal">${cells}</div>
+      <p class="muted" style="font-weight:800;text-align:center;margin:16px 0 0">${plural(monthCount,'building day')} this month · 🔥 ${st.streak}-day streak</p>
+    </div>
+    ${sel ? `<div class="card daylist" style="margin-top:18px"><h2 style="font-size:22px;margin-bottom:8px">${fmtKey(sel)}</h2>${list.length ? `<ul>${list.map(e=>{ const s = SET_BY_NAME[e.name];
+        return `<li><span style="font-size:22px">${e.type==='study'?'📖':'✏️'}</span><span style="flex:1">${e.type==='study'?'Studied':`Quiz ${e.score}%`} · ${esc(s ? setTitle(s) : e.name)}</span><span class="muted">${fmtTime(e.date)}</span></li>`; }).join('')}</ul>` : '<p class="muted" style="font-weight:700">No builds on this day.</p>'}</div>` : ''}
+  </div>`;
+}
+function viewStyle(){
+  if (!S.styleDraft) S.styleDraft = clone(D().player);
+  const p = S.styleDraft;
+  const changed = JSON.stringify(p) !== JSON.stringify(D().player);
+  const sw = (field) => `<div class="swatches">${Object.entries(BRICK_COLORS).map(([k,c])=>`<button class="sw ${p[field]===k?'on':''}" style="--c:${c.hex};--t:${textOn(c.hex)}" data-act="styleSet" data-f="${field}" data-v="${k}" title="${c.name}">${p[field]===k?'<span>✓</span>':''}</button>`).join('')}</div>`;
+  return `<div class="wrap">
+    <h1 style="margin-top:24px;font-size:32px">🎨 My Style</h1>
+    <p class="muted" style="font-weight:700;margin:6px 0 0">Pick your world and your colors. You see the changes right away. Tap Save when you love it!</p>
+    <h2 class="section-title">1. Pick your world</h2>
+    <div class="themes">${Object.entries(THEMES).map(([k,t])=>`<button class="card themecard ${p.theme===k?'on':''}" data-act="styleSet" data-f="theme" data-v="${k}">
+      ${p.theme===k?'<span class="on-tag">✓ Picked</span>':''}${minifig({...p, theme:k}, 84, p.theme===k?'cheer':'stand')}
+      <div class="tn">${t.name}</div><div class="tt">${t.tag}</div></button>`).join('')}</div>
+    <h2 class="section-title">2. Main color</h2>${sw('mainColor')}
+    <h2 class="section-title">3. Accent color</h2>${sw('accentColor')}
+    <h2 class="section-title">4. Day or night?</h2>
+    <div class="seg"><button class="${p.mode==='day'?'on':''}" data-act="styleSet" data-f="mode" data-v="day">☀️ Day</button><button class="${p.mode==='night'?'on':''}" data-act="styleSet" data-f="mode" data-v="night">🌙 Night</button></div>
+    <h2 class="section-title">5. Builder name</h2>
+    <label class="field" style="max-width:420px;margin-top:0"><input id="pname" data-inp="pname" maxlength="20" placeholder="Type your name" value="${esc(p.name)}"></label>
+    <div class="savebar">${changed ? `<button class="brick ghost" data-act="styleReset">Undo changes</button><button class="brick accent big" style="max-width:340px" data-act="styleSave">💾 Save my style</button>` : '<span class="chip">✓ Style saved</span>'}</div>
+  </div>`;
+}
+function viewParents(st){
+  const s = D().settings;
+  const fs = 'showDirectoryPicker' in window;
+  const connected = S.dir && S.dirStatus === 'granted';
+  const lastExport = S.meta.lastExport;
+  const needBackup = !lastExport || (Date.now() - Date.parse(lastExport)) > 7*864e5;
+  const summary = d => { const x = computeStats(d); return `${x.started} sets · ${x.studs.toLocaleString()} studs · ${x.counts.gold} gold`; };
+  const zoneRows = ZONES.map(z=>{ const zp = zoneProgress(z, st); return `<tr><td>${esc(z.short)}</td><td>${zp.started}/${zp.total}</td><td>${zp.passed}</td><td>${zp.gold}</td></tr>`; }).join('');
+  return `<div class="wrap stack-gap" style="padding-top:24px">
+    <div style="display:flex;align-items:center;gap:12px"><h1 style="font-size:32px;flex:1">🔓 Parent Corner</h1><button class="brick ghost sm" data-act="lock">Lock</button></div>
+    <div class="card">
+      <h2 style="font-size:22px">💾 Save file</h2>
+      ${connected ? `<div class="callout info">Saving automatically to <b>${esc(S.dir.name)}\\${FILE_NAME}</b>. A backup copy of the previous save is kept as ${BAK_NAME}.</div>` :
+        S.dir ? `<div class="callout warn">The save folder <b>${esc(S.dir.name)}</b> needs permission again. Tap Reconnect.</div>` :
+        fs ? `<div class="callout warn">Progress is only saved inside this browser. Connect a save folder so it is saved to <b>${FILE_NAME}</b>. Tip: pick a OneDrive folder to share it with the iPad.</div>` :
+        `<div class="callout info">On this device, progress saves automatically inside the browser. Use <b>Save to Files</b> to keep a copy in iCloud Drive or OneDrive, and <b>Open from Files</b> to load progress from the PC.</div>`}
+      ${!connected && needBackup ? `<div class="callout warn">⏰ ${lastExport ? `Last backup file: ${fmtDate(lastExport)}.` : 'No backup file saved yet.'} Save a backup copy this week.</div>` : ''}
+      <div class="btnrow">
+        ${fs ? (connected ? `<button class="brick ghost sm" data-act="disconnect">Disconnect folder</button>` : S.dir ? `<button class="brick sm" data-act="reconnect">Reconnect</button><button class="brick ghost sm" data-act="connect">Pick another folder</button>` : `<button class="brick sm" data-act="connect">📁 Connect Save Folder</button>`) : ''}
+        <button class="brick accent sm" data-act="export">⬆️ Save to Files</button>
+        <button class="brick ghost sm" data-act="import">⬇️ Open from Files</button>
+      </div>
+      <p class="muted" style="font-weight:700;margin:14px 0 0">Last saved: ${fmtDT(D().savedAt)} on ${esc(D().device||'device')} · "${esc(D().label)}"</p>
+    </div>
+    <div class="card">
+      <h2 style="font-size:22px">⏪ Versions (last ${MAX_VERSIONS} changes)</h2>
+      <p class="muted" style="font-weight:700;margin:6px 0 0">Every change saves a version. Restore one to go back. Restoring can be undone too.</p>
+      <div class="ver"><div class="vnum" style="background:var(--main);color:var(--main-text)">▶</div><div><div class="vt">Now: ${esc(D().label)}</div><div class="vs">${fmtDT(D().savedAt)} · ${summary(D())}</div></div></div>
+      ${S.doc.versions.length ? S.doc.versions.map((v,i)=>`<div class="ver"><div class="vnum">${i+1}</div><div><div class="vt">${esc(v.label)}</div><div class="vs">${fmtDT(v.savedAt)} · ${esc(v.device||'')} · ${summary(v)}</div></div><button class="brick ghost sm" data-act="restore" data-i="${i}">Restore</button></div>`).join('') : '<p class="muted" style="font-weight:700">No earlier versions yet.</p>'}
+    </div>
+    <div class="card">
+      <h2 style="font-size:22px">⚙️ Settings</h2>
+      <div class="field">Daily goal (sets per day)<div class="stepper"><button class="brick ghost sm" data-act="goalStep" data-d="-1">−</button><b id="goalval">${s.dailyGoal}</b><button class="brick ghost sm" data-act="goalStep" data-d="1">+</button></div></div>
+      <label class="field">Spelling bee date <small>(shows a countdown)</small><input type="date" id="beedate" value="${esc(s.beeDate)}"></label>
+      <label class="field">Focus zone <small>(Today's builds come from here first)</small><select id="focus"><option value="">No focus (go in map order)</option>${ZONES.map(z=>`<option value="${z.id}" ${s.focusZone===z.id?'selected':''}>${esc(z.short)}</option>`).join('')}</select></label>
+      <label class="field" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="sound" ${s.sound?'checked':''} style="width:24px;height:24px;margin:0"> Sound effects</label>
+      <div class="btnrow"><button class="brick sm" data-act="saveSettings">Save settings</button><button class="brick ghost sm" data-act="changePin">Change PIN</button></div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:22px">✏️ Fix or add past progress</h2>
+      <p class="muted" style="font-weight:700;margin:6px 0 0">Turn this on, then open any set to edit dates, change scores, delete mistakes or add work done before the app. Each zone also gets a "mark all studied" button.</p>
+      <div class="btnrow"><button class="brick ${S.editMode?'accent':'ghost'} sm" data-act="editToggle">${S.editMode?'✓ Edit mode is ON':'Turn on edit mode'}</button></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px"><h2 style="font-size:22px;flex:1">📊 Progress report</h2><button class="brick ghost sm" data-act="csv">Export CSV</button></div>
+      <table class="ptable" style="margin-top:10px"><tr><th>Collection</th><th>Started</th><th>Passed</th><th>Gold</th></tr>${zoneRows}</table>
+    </div>
+    <p class="muted" style="text-align:center;font-weight:700">SpellCoach ${APP_VERSION} · ${st.total} word lists</p>
+  </div>`;
+}
+function modalHTML(st){
+  const m = S.modal; if (!m) return '';
+  let inner = '';
+  if (m.type === 'set'){
+    const s = SETS[m.id], z = ZONE_BY_ID[s.zoneId], r = D().sets[s.name] || {studied:[], quizzes:[]};
+    const status = st.status[s.name], passes = r.quizzes.filter(q=>q.score>=PASS_SCORE);
+    const best = r.quizzes.length ? Math.max(...r.quizzes.map(q=>q.score)) : null;
+    const due = goldDue(r), tk = todayKey();
+    const step = (on, g, label, date) => `<div class="step ${on?'on':''} ${g?'g':''}"><div class="si"></div><div class="sl">${label}</div><div class="sd">${date}</div></div>`;
+    let hint = '';
+    if (status === 'passed') hint = due <= tk ? `<div class="callout">🥇 Gold Brick time! Pass the quiz again today to win the Gold Brick.</div>` : `<div class="callout info">🥇 Take this quiz again on or after <b>${fmtKey(due,{weekday:'short',month:'short',day:'numeric'})}</b> to win the Gold Brick.</div>`;
+    else if (status === 'studied' && r.quizzes.length) hint = `<div class="callout info">So close! Score ${PASS_SCORE}% or more on the quiz to earn the second brick.</div>`;
+    else if (status === 'studied') hint = `<div class="callout info">Nice studying! Now take the quiz to earn the second brick.</div>`;
+    const entries = [...r.studied.map((d,i)=>({type:'study', d, i})), ...r.quizzes.map((q,i)=>({type:'quiz', d:q.date, score:q.score, i}))].sort((a,b)=>a.d<b.d?1:-1);
+    const edit = S.editMode ? `<div class="editbox"><b>Parent edit</b>
+      ${entries.map(e=>`<div class="editrow"><span>${e.type==='study'?'📖 Studied':'✏️ Quiz'}</span><input type="datetime-local" value="${toLocalInput(e.d)}" data-chg="entryDate" data-type="${e.type}" data-i="${e.i}" data-id="${s.id}">${e.type==='quiz'?`<input type="number" min="0" max="100" value="${e.score}" data-chg="entryScore" data-i="${e.i}" data-id="${s.id}">%`:''}<button class="brick red sm" data-act="entryDel" data-type="${e.type}" data-i="${e.i}" data-id="${s.id}">Delete</button></div>`).join('') || '<p class="muted">No entries yet.</p>'}
+      <div class="editrow" style="margin-top:8px;border-top:1px solid var(--line);padding-top:12px"><b>Add past entry:</b>
+        <select id="addtype" style="font:800 15px var(--font);padding:8px;border-radius:10px"><option value="study">Studied</option><option value="quiz">Quiz</option></select>
+        <input type="datetime-local" id="adddate" value="${toLocalInput(nowIso())}"><input type="number" id="addscore" min="0" max="100" value="90" title="Quiz score">%
+        <button class="brick sm" data-act="entryAdd" data-id="${s.id}">Add</button></div></div>` : '';
+    inner = `<div class="sheet">
+      <div class="sheet-head"><div class="zicon">${zoneIcon(z)}</div><div><div class="eyebrow">${esc(zoneName(z))} · ${esc(z.short)}</div><h2>${esc(s.display)}</h2></div><button class="x" data-act="close" aria-label="Close">✕</button></div>
+      <div class="ladder">
+        ${step(status!=='none', false, 'Studied', r.studied.length ? fmtShort(r.studied[0]) : 'Not yet')}
+        ${step(status==='passed'||status==='gold', false, `Quiz ${PASS_SCORE}%+`, passes.length ? `${fmtShort(passes[0].date)} · best ${best}%` : best!==null ? `Best ${best}%` : 'Not yet')}
+        ${step(status==='gold', true, 'Gold Brick', status==='gold' ? 'Earned! 🥇' : 'Not yet')}
+      </div>
+      ${hint}
+      <div class="actions">
+        <button class="brick big" data-act="study" data-id="${s.id}">📖 I studied it</button>
+        <button class="brick accent big" data-act="quiz" data-id="${s.id}">✏️ I took the quiz</button>
+      </div>
+      ${entries.length && !S.editMode ? `<details class="hist"><summary>My history (${entries.length})</summary><ul>${entries.map(e=>`<li>${e.type==='study'?'📖 Studied':`✏️ Quiz ${e.score}%`} · ${fmtDT(e.d)}</li>`).join('')}</ul></details>` : ''}
+      ${edit}
+    </div>`;
+  }
+  if (m.type === 'quiz'){
+    const s = SETS[m.id];
+    const opts = [[100,'Perfect!','🌟'],[90,'Awesome','🚀'],[80,'Great','👍'],[70,'Good try','💪'],[60,'Keep going','🧱'],[50,'Under 60%','🔁']];
+    inner = `<div class="sheet">
+      <div class="sheet-head"><div><div class="eyebrow">${esc(s.display)}</div><h2>How did the quiz go?</h2></div><button class="x" data-act="close" aria-label="Close">✕</button></div>
+      <p class="muted" style="font-weight:700;margin-top:-6px">Pick the score closest to yours.</p>
+      <div class="scores">${opts.map(([v,l,ic])=>`<button class="brick ${v>=PASS_SCORE?'':'ghost'}" data-act="score" data-id="${s.id}" data-v="${v}"><b>${ic} ${v===50?'<60':v}%</b><small>${l}</small></button>`).join('')}</div>
+      <div style="text-align:center;margin-top:12px"><button class="linkbtn" data-act="openSet" data-id="${s.id}">← Back</button></div>
+    </div>`;
+  }
+  if (m.type === 'celebrate'){
+    const s = SET_BY_NAME[m.name], p = D().player, th = THEMES[p.theme];
+    const passed = m.kind === 'quiz' && m.score >= PASS_SCORE;
+    const title = m.newGold ? th.gold : m.kind === 'study' ? th.done : passed ? 'Quiz passed! Brick earned!' : 'Nice effort! Keep building!';
+    const M = BRICK_COLORS[p.mainColor].hex, A = BRICK_COLORS[p.accentColor].hex;
+    const cols = m.newGold ? ['#F5C518','#F5C518','#F5C518'] : [M, A, M];
+    inner = `<div class="sheet celebrate">
+      ${minifig(p, 110, 'cheer')}
+      <div class="bstack">${cols.map((c,i)=>`<i style="--c:${c};animation-delay:${.15+i*.18}s"></i>`).join('')}</div>
+      <h1>${title}</h1>
+      <p style="font-size:18px;font-weight:800;margin:8px 0 0">${esc(setTitle(s))}${m.kind==='quiz' ? ` · ${m.score}%` : ''}</p>
+      ${m.studs > 0 ? `<span class="reward"><span class="stud"></span>+${m.studs} studs</span>` : `<span class="reward">💪 Extra practice!</span>`}
+      ${m.streak >= 2 ? `<span class="reward">🔥 ${m.streak}-day streak</span>` : ''}
+      ${m.goalHit ? `<div class="callout" style="font-size:18px">🎉 Daily goal complete! +25 bonus studs</div>` : ''}
+      ${m.kind==='quiz' && !passed ? `<div class="callout info">Study the tricky words and try the quiz again. Every try makes you stronger!</div>` : ''}
+      <button class="brick accent big" style="margin-top:22px" data-act="close">Awesome!</button>
+      <div><button class="linkbtn" data-act="undo">Oops, I tapped by mistake</button></div>
+    </div>`;
+  }
+  if (m.type === 'pin'){
+    const creating = !D().settings.pinHash || m.mode === 'change';
+    const stage = creating ? (S.pinFirst ? 'Type the new PIN again' : (m.mode==='change' ? 'Type a new 4-digit PIN' : 'Create a 4-digit parent PIN')) : 'Enter the parent PIN';
+    inner = `<div class="sheet" style="text-align:center">
+      <div class="sheet-head"><h2 style="flex:1;text-align:left">🔒 Parents only</h2><button class="x" data-act="close" aria-label="Close">✕</button></div>
+      <p style="font-weight:800;font-size:18px;margin:0">${stage}</p>
+      ${m.error ? `<p style="color:#D01012;font-weight:800">${esc(m.error)}</p>` : ''}
+      <div class="pindots ${m.error?'shake':''}">${[0,1,2,3].map(i=>`<i class="${i<S.pin.length?'on':''}"></i>`).join('')}</div>
+      <div class="pinpad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="brick ghost" data-act="pinKey" data-k="${n}">${n}</button>`).join('')}<span></span><button class="brick ghost" data-act="pinKey" data-k="0">0</button><button class="brick ghost" data-act="pinKey" data-k="del">⌫</button></div>
+    </div>`;
+  }
+  if (m.type === 'confirm'){
+    inner = `<div class="sheet"><h2 style="font-size:26px">${esc(m.title)}</h2><p style="font-size:17px;font-weight:600;line-height:1.5">${m.body}</p>
+      <div class="actions">${m.noCancel ? '' : `<button class="brick ghost" data-act="close">Cancel</button>`}<button class="brick ${m.danger?'red':'accent'}" data-act="confirmYes">${esc(m.yes||'OK')}</button></div></div>`;
+  }
+  if (m.type === 'choice'){
+    const f = S.pendingFileDoc, sum = d => { const x = computeStats(d); return `${x.started} sets built · ${x.studs.toLocaleString()} studs`; };
+    inner = `<div class="sheet"><h2 style="font-size:26px">Which progress should we keep?</h2>
+      <p class="muted" style="font-weight:700">This folder already has a save file, and it is different from the progress on this device. The one you don't pick is kept as a version you can restore.</p>
+      <div class="choices">
+        <button class="card choice" data-act="choose" data-v="file"><b style="font-size:19px">📁 Save file in the folder</b><br><span class="muted" style="font-weight:700">${fmtDT(f.current.savedAt)} on ${esc(f.current.device||'device')} · ${sum(f.current)}</span></button>
+        <button class="card choice" data-act="choose" data-v="local"><b style="font-size:19px">💻 Progress on this device</b><br><span class="muted" style="font-weight:700">${fmtDT(D().savedAt)} · ${sum(D())}</span></button>
+      </div></div>`;
+  }
+  return `<div class="overlay" data-act="${m.type==='choice'?'':'backdrop'}">${inner}</div>`;
+}
+function render(){
+  const st = computeStats(D());
+  let body = '';
+  if (S.screen === 'today') body = viewToday(st);
+  else if (S.screen === 'map') body = viewMap(st);
+  else if (S.screen === 'zone') body = viewZone(st);
+  else if (S.screen === 'calendar') body = viewCalendar(st);
+  else if (S.screen === 'style') body = viewStyle();
+  else if (S.screen === 'parents') body = S.parentOk ? viewParents(st) : viewToday(st);
+  const focusId = document.activeElement && document.activeElement.id;
+  $('#app').innerHTML = header(st) + `<main>${body}</main>` + nav() + modalHTML(st);
+  if (focusId === 'pname'){ const el = $('#pname'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }
+}
+function go(screen){
+  if (S.screen === 'style' && screen !== 'style' && S.styleDraft){ S.styleDraft = null; applyTheme(D().player); }
+  S.screen = screen; S.modal = null; render(); window.scrollTo({top:0});
+}
+
+/* ================= actions ================= */
+const ACT = {
+  nav(d){ sfx('tap'); if (d.to === 'parents' && !S.parentOk){ S.pin=''; S.pinFirst=''; openModal({type:'pin'}); return; } go(d.to); },
+  zone(d){ sfx('tap'); S.zoneId = d.id; go('zone'); },
+  openSet(d){ sfx('tap'); openModal({type:'set', id:+d.id}); },
+  close(){ closeModal(); },
+  backdrop(d, el, e){ if (e.target === el && S.modal && S.modal.type !== 'celebrate') closeModal(); },
+  study(d){ markStudied(SETS[+d.id].name); },
+  quiz(d){ sfx('tap'); openModal({type:'quiz', id:+d.id}); },
+  score(d){ markQuiz(SETS[+d.id].name, +d.v); },
+  undo(){ const t = $('#toast'); if (t) t.remove(); sfx('oops'); undoLast(); },
+  calMove(d){ let [y,m] = S.cal; m += +d.d; if (m < 0){ m = 11; y--; } if (m > 11){ m = 0; y++; } S.cal = [y,m]; S.calDay = null; render(); },
+  calDay(d){ sfx('tap'); S.calDay = S.calDay === d.k ? null : d.k; render(); },
+  styleSet(d){ sfx('snap'); S.styleDraft[d.f] = d.v; applyTheme(S.styleDraft); render(); },
+  styleReset(){ S.styleDraft = clone(D().player); applyTheme(D().player); render(); },
+  async styleSave(){ const p = clone(S.styleDraft); await commit(`Changed style to ${THEMES[p.theme].name}`, d=>{ d.player = p; }); S.styleDraft = clone(D().player); applyTheme(D().player); sfx('win'); confetti(50); render(); toast('Style saved. Looking awesome!'); },
+  pinKey(d){ pinKey(d.k); },
+  lock(){ S.parentOk = false; S.editMode = false; go('today'); },
+  connect(){ connectFolder(); },
+  reconnect(){ reconnect(); },
+  disconnect(){ openModal({type:'confirm', title:'Disconnect the save folder?', body:'Progress will keep saving inside this browser, but not to the JSON file.', yes:'Disconnect', danger:true, onYes:disconnectFolder}); },
+  export(){ exportFile(); },
+  import(){ $('#filepick').value = ''; $('#filepick').click(); },
+  restore(d){ const v = S.doc.versions[+d.i]; openModal({type:'confirm', title:'Restore this version?', body:`<b>${esc(v.label)}</b><br>${esc(fmtDT(v.savedAt))}<br><br>Your current progress will be saved as a version first, so you can undo this.`, yes:'Restore', onYes:async()=>{ await restoreVersion(+d.i); render(); toast('Version restored'); }}); },
+  goalStep(d){ const el = $('#goalval'); el.textContent = Math.max(1, Math.min(10, (+el.textContent) + (+d.d))); },
+  async saveSettings(){
+    const goal = +$('#goalval').textContent, bee = $('#beedate').value, focus = $('#focus').value, sound = $('#sound').checked;
+    await commit('Parent changed settings', d=>{ Object.assign(d.settings, {dailyGoal:goal, beeDate:bee, focusZone:focus, sound}); });
+    render(); toast('Settings saved');
+  },
+  changePin(){ S.pin=''; S.pinFirst=''; openModal({type:'pin', mode:'change'}); },
+  editToggle(){ S.editMode = !S.editMode; render(); },
+  csv(){ exportCSV(); },
+  async confirmYes(){ const m = S.modal; S.modal = null; render(); if (m && m.onYes) await m.onYes(); },
+  async choose(d){
+    const f = S.pendingFileDoc; S.pendingFileDoc = null; S.modal = null;
+    if (d.v === 'file') await adoptDoc(f, 'Loaded save file from folder');
+    else { S.doc.versions = [clone(f.current), ...S.doc.versions].slice(0, MAX_VERSIONS); await commit('Kept this device progress', ()=>{}); }
+    render(); toast('Connected! Progress now saves to the folder.');
+  },
+  async entryDel(d){ const s = SETS[+d.id]; await commit(`Parent removed an entry from ${setTitle(s)}`, x=>{ const r = rec(x, s.name); (d.type==='study' ? r.studied : r.quizzes).splice(+d.i, 1); }); render(); },
+  async entryAdd(d){
+    const s = SETS[+d.id], type = $('#addtype').value, dt = $('#adddate').value, score = Math.max(0, Math.min(100, +$('#addscore').value || 0));
+    if (!dt) return toast('Pick a date first');
+    const iso = new Date(dt).toISOString();
+    await commit(`Parent added ${type==='study'?'study':'quiz'} entry to ${setTitle(s)}`, x=>{ const r = rec(x, s.name); if (type==='study') r.studied.push(iso); else r.quizzes.push({date:iso, score}); });
+    render(); toast('Entry added');
+  },
+  async bulkStudy(d){
+    const z = ZONE_BY_ID[d.id], k = $('#bulkdate').value; if (!k) return;
+    const iso = new Date(keyToDate(k).setHours(12)).toISOString();
+    const todo = z.sets.filter(s=> setStatus(D().sets[s.name]) === 'none');
+    if (!todo.length) return toast('Every set in this zone is already started');
+    openModal({type:'confirm', title:`Mark ${plural(todo.length,'set')} as studied?`, body:`All not-started sets in <b>${esc(z.short)}</b> will be marked studied on <b>${esc(fmtKey(k))}</b>.`, yes:'Mark them', onYes:async()=>{ await commit(`Parent marked ${z.short} studied`, x=>{ todo.forEach(s=>rec(x,s.name).studied.push(iso)); }); render(); toast('Done!'); }});
+  }
+};
+const CHG = {
+  async entryDate(el){ const s = SETS[+el.dataset.id]; if (!el.value) return; const iso = new Date(el.value).toISOString();
+    await commit(`Parent edited a date on ${setTitle(s)}`, x=>{ const r = rec(x, s.name); if (el.dataset.type==='study') r.studied[+el.dataset.i] = iso; else r.quizzes[+el.dataset.i].date = iso; }); render(); },
+  async entryScore(el){ const s = SETS[+el.dataset.id]; const v = Math.max(0, Math.min(100, +el.value || 0));
+    await commit(`Parent edited a score on ${setTitle(s)}`, x=>{ rec(x, s.name).quizzes[+el.dataset.i].score = v; }); render(); }
+};
+async function pinKey(k){
+  const m = S.modal; if (!m) return;
+  m.error = '';
+  if (k === 'del'){ S.pin = S.pin.slice(0,-1); render(); return; }
+  if (S.pin.length >= 4) return;
+  sfx('tap'); S.pin += k; render();
+  if (S.pin.length < 4) return;
+  const creating = !D().settings.pinHash || m.mode === 'change';
+  if (creating){
+    if (!S.pinFirst){ S.pinFirst = S.pin; S.pin = ''; setTimeout(render, 150); return; }
+    if (S.pinFirst !== S.pin){ S.pinFirst = ''; S.pin = ''; m.error = "Those PINs didn't match. Try again."; sfx('oops'); render(); return; }
+    const h = await hashPin(S.pin); S.pin = ''; S.pinFirst = '';
+    await commit(m.mode === 'change' ? 'Parent changed the PIN' : 'Parent PIN created', d=>{ d.settings.pinHash = h; });
+    S.parentOk = true; S.modal = null; go('parents'); toast('PIN saved'); return;
+  }
+  const h = await hashPin(S.pin); S.pin = '';
+  if (h === D().settings.pinHash){ S.parentOk = true; S.modal = null; go('parents'); }
+  else { m.error = 'Wrong PIN'; sfx('oops'); render(); }
+}
+function exportCSV(){
+  const st = computeStats(D());
+  const q = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+  const rows = [['Collection','Set','Status','First studied','Times studied','Quizzes','Best score','Last quiz','Gold due/earned']];
+  for (const z of ZONES) for (const s of z.sets){
+    const r = D().sets[s.name] || {studied:[], quizzes:[]}, status = st.status[s.name];
+    const best = r.quizzes.length ? Math.max(...r.quizzes.map(x=>x.score)) : '';
+    const last = r.quizzes.length ? r.quizzes.map(x=>x.date).sort().pop() : '';
+    rows.push([z.short, s.name, status, r.studied.length ? dayKey([...r.studied].sort()[0]) : '', r.studied.length, r.quizzes.length, best, last ? dayKey(last) : '', status==='gold' ? 'earned' : (goldDue(r) || '')]);
+  }
+  downloadText(`spellcoach-report-${todayKey()}.csv`, rows.map(r=>r.map(q).join(',')).join('\r\n'), 'text/csv');
+}
+
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-act]'); if (!el || !el.dataset.act) return;
+  const fn = ACT[el.dataset.act]; if (fn) fn(el.dataset, el, e);
+});
+document.addEventListener('change', e=>{ const el = e.target.closest('[data-chg]'); if (el && CHG[el.dataset.chg]) CHG[el.dataset.chg](el, e); });
+document.addEventListener('input', e=>{
+  if (e.target.dataset.inp === 'pname' && S.styleDraft){ S.styleDraft.name = e.target.value.slice(0,20); const bar = $('.savebar'); if (bar && !bar.querySelector('[data-act=styleSave]')) render(); }
+});
+document.addEventListener('keydown', e=>{
+  if (S.modal && S.modal.type === 'pin'){ if (/^\d$/.test(e.key)) pinKey(e.key); else if (e.key === 'Backspace') pinKey('del'); }
+  if (e.key === 'Escape' && S.modal) closeModal();
+});
+$('#filepick').addEventListener('change', e=>{ const f = e.target.files && e.target.files[0]; if (f) importFile(f); });
+document.addEventListener('visibilitychange', async ()=>{
+  if (document.visibilityState === 'visible' && S.dir && S.dirStatus === 'granted' && !S.modal && !S.testMode){ try { await syncFromFolder(); } catch {} }
+});
+
+/* ================= boot ================= */
+async function boot(){
+  buildCatalog(parseListNames(WORD_LIST_TEXT));
+  if (location.hash === '#selftest') return selfTest();
+  if (location.hash.startsWith('#shot:')) return demoShot(location.hash.slice(6).split(':'));
+  const raw = await kvGet('doc');
+  try { S.doc = raw ? normalizeDoc(raw) : newDoc(); } catch { S.doc = newDoc(); }
+  S.meta = (await kvGet('meta')) || {};
+  if ('showDirectoryPicker' in window){
+    const h = await kvGet('dir');
+    if (h && h.queryPermission){
+      S.dir = h;
+      try { S.dirStatus = await h.queryPermission({mode:'readwrite'}); } catch { S.dirStatus = 'prompt'; }
+    }
+  }
+  applyTheme(D().player); render();
+  if (S.dirStatus === 'granted'){ try { await syncFromFolder(); } catch (e){ console.error(e); } }
+  else if (!raw) await persist();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+}
+
+// Renders a screen with sample data for visual checks; never touches saved progress.
+async function demoShot([screen, th, mode]){
+  S.testMode = true; S.doc = newDoc();
+  Object.assign(D().player, {theme:th||'city', mode:mode||'day', name:'Alex', mainColor: ({space:'purple', castle:'red', chess:'black', diving:'teal'})[th] || 'blue', accentColor: ({castle:'yellow', chess:'yellow', diving:'orange'})[th] || 'orange'});
+  D().settings.beeDate = addDays(todayKey(), 42);
+  const ago = n => new Date(keyToDate(addDays(todayKey(), -n)).setHours(17)).toISOString();
+  const snsb = ZONE_BY_ID.snsb.sets, list1 = ZONE_BY_ID.list1.sets;
+  [...snsb.slice(0,6), ...list1.slice(0,9)].forEach((s,i)=>{ D().sets[s.name] = {studied:[ago(14-i % 12)], quizzes: i%3 ? [{date:ago(13-i % 12), score: 70 + (i*7)%31}] : []}; });
+  D().sets[snsb[0].name].quizzes = [{date:ago(12), score:90}, {date:ago(2), score:95}];
+  D().sets[list1[10].name] = {studied:[nowIso()], quizzes:[]};
+  applyTheme(D().player);
+  if (screen === 'zone'){ S.zoneId = 'snsb'; S.screen = 'zone'; }
+  else if (screen === 'set'){ S.screen = 'today'; S.modal = {type:'set', id:snsb[1].id}; }
+  else if (screen === 'celebrate'){ S.screen = 'today'; const b = computeStats(D()); D().sets[list1[11].name] = {studied:[nowIso()], quizzes:[]}; S.modal = {type:'celebrate', kind:'study', name:list1[11].name, studs:35, goalHit:true, streak:3}; }
+  else S.screen = screen;
+  if (screen === 'calendar') S.calDay = addDays(todayKey(), -3);
+  if (screen === 'style') S.styleDraft = clone(D().player);
+  render();
+}
+async function selfTest(){
+  const out = [], ok = (c,m) => out.push((c ? 'PASS ' : 'FAIL ') + m);
+  S.testMode = true; S.doc = newDoc(); applyTheme(D().player);
+  try {
+    ok(SETS.length >= 450, 'catalog sets: ' + SETS.length);
+    ok(ZONES.length >= 20, 'zones: ' + ZONES.length + ' -> ' + ZONES.map(z=>`${z.id}(${z.sets.length})`).join(', '));
+    const unmapped = SETS.filter(s=>s.zoneId.startsWith('z-'));
+    ok(unmapped.length === 0, 'unmapped sets: ' + unmapped.map(s=>s.name).join(' | '));
+    ok(SET_BY_NAME['Past National Scripps Words_Module 2631 words_set_33_set 33']?.zoneId === 'national', 'mixed-case national set mapped');
+    ok(SET_BY_NAME['Greek  Roots']?.zoneId === 'roots' && SET_BY_NAME['New Latin  Roots 2']?.zoneId === 'roots', 'roots mapped: ' + SET_BY_NAME['New Latin  Roots 2']?.display);
+    ok(SET_BY_NAME['Popular National Words_Set_06']?.zoneId === 'popular' && SET_BY_NAME['Popular National Words - Set 01']?.zoneId === 'popular', 'popular both formats');
+    ok(SET_BY_NAME['Spelling Word List 6_Set_22']?.zoneId === 'list6', 'list 6 both formats');
+    ok(SET_BY_NAME['Past SNSB Words_Set_03_2024']?.display === '2024', 'display label year');
+    ok(SET_BY_NAME['Geographical Words Module_Set_05']?.display === 'Set 5', 'display label set number');
+    ok(SET_BY_NAME['Intermediate Coaching - HW-Week2']?.zoneId === 'coach', 'coaching mapped');
+    const s1 = ZONES[0].sets[0].name;
+    await markStudied(s1);
+    ok(setStatus(D().sets[s1]) === 'studied', 'studied state');
+    ok(S.doc.versions.length === 1 && S.doc.versions[0].label === 'New game', 'first change creates 1 version');
+    ok(S.modal && S.modal.type === 'celebrate' && S.modal.studs === 10, 'celebration shows +10 studs');
+    await markQuiz(s1, 90);
+    ok(setStatus(D().sets[s1]) === 'passed', 'passed state');
+    ok(computeStats(D()).studs === 40, 'studs after study+quiz = 40: ' + computeStats(D()).studs);
+    await markStudied(s1);
+    ok(computeStats(D()).studs === 40, 'repeat same-day study earns no extra studs');
+    await markStudied(ZONES[0].sets[1].name);
+    ok(S.modal.goalHit === true && computeStats(D()).studs === 40+10+25, 'daily goal bonus: ' + computeStats(D()).studs);
+    for (let i=0;i<12;i++) await markStudied(SETS[i+20].name);
+    ok(S.doc.versions.length === 10, 'versions capped at 10: ' + S.doc.versions.length);
+    const before = computeStats(D()).started;
+    await undoLast();
+    ok(computeStats(D()).started === before - 1, 'undo removes last set');
+    ok(D().label.startsWith('Undo:') && S.doc.versions.length === 10, 'undo is itself versioned');
+    await undoLast();
+    ok(computeStats(D()).started === before, 'undo the undo brings it back');
+    const target = clone(S.doc.versions[9]);
+    await restoreVersion(9);
+    ok(D().label.startsWith('Restored') && JSON.stringify(D().sets) === JSON.stringify(target.sets), 'restore oldest version');
+    const g = {studied:[], quizzes:[{date:'2026-01-01T15:00:00Z',score:85},{date:'2026-01-09T15:00:00Z',score:90}]};
+    ok(setStatus(g) === 'gold', 'gold after 8 days');
+    ok(setStatus({studied:[], quizzes:[{date:'2026-01-01T15:00:00Z',score:85},{date:'2026-01-03T15:00:00Z',score:95}]}) === 'passed', 'no gold after 2 days');
+    ok(setStatus({studied:[], quizzes:[{date:'2026-01-01T15:00:00Z',score:60}]}) === 'studied', 'failed quiz = studied');
+    const rt = normalizeDoc(JSON.stringify(S.doc));
+    ok(rt.versions.length === S.doc.versions.length && rt.current.savedAt === D().savedAt && JSON.stringify(rt.current.sets) === JSON.stringify(D().sets), 'JSON round trip');
+    ok(normalizeDoc({...clone(S.doc), app:'BrickQuest'}).app === 'SpellCoach', 'accepts save files from before the rename');
+    let rej = false; try { normalizeDoc('{"x":1}'); } catch { rej = true; } ok(rej, 'rejects non-save file');
+    rej = false; try { normalizeDoc(JSON.stringify({...S.doc, schemaVersion:99})); } catch { rej = true; } ok(rej, 'rejects newer schema');
+    const old = clone(S.doc); old.current.savedAt = '2020-01-01T00:00:00.000Z';
+    ok(normalizeDoc(old).current.savedAt < D().savedAt, 'older-file detection works');
+    const verBefore = S.doc.versions.length, cur = D().label;
+    await adoptDoc(normalizeDoc(old), 'Opened save file');
+    ok(S.doc.versions[0].label === cur && S.doc.versions.length === Math.min(MAX_VERSIONS, Math.max(verBefore, 1)), 'loading a file keeps current as a version');
+    const y = {...D(), sets:{}}; const k = todayKey();
+    y.sets[s1] = {studied:[new Date(keyToDate(addDays(k,-1)).setHours(10)).toISOString(), new Date(keyToDate(addDays(k,-2)).setHours(10)).toISOString(), nowIso()], quizzes:[]};
+    ok(computeStats(y).streak === 3, 'streak counts 3 days: ' + computeStats(y).streak);
+    for (const sc of ['today','map','calendar','style','parents']){ S.parentOk = true; S.screen = sc; S.modal = null; render(); }
+    S.zoneId = 'snsb'; S.screen = 'zone'; render(); ok(document.querySelectorAll('.tile').length === ZONE_BY_ID.snsb.sets.length, 'zone screen renders tiles');
+    const missing = ZONES.flatMap(z=>Object.keys(THEMES).filter(t=>!z.names[t] || !z.icons[t]).map(t=>z.id+':'+t));
+    ok(missing.length === 0, 'every zone named in every theme: ' + missing.join(','));
+    for (const t of Object.keys(THEMES)) for (const md of ['day','night']){ applyTheme({...D().player, theme:t, mode:md}); render(); }
+    S.modal = {type:'set', id:SETS[0].id}; render(); ok(!!document.querySelector('.ladder'), 'set sheet renders');
+    S.editMode = true; render(); ok(!!document.querySelector('.editbox'), 'edit mode renders');
+    S.modal = {type:'quiz', id:SETS[0].id}; render(); ok(document.querySelectorAll('.scores .brick').length === 6, 'quiz sheet renders');
+    S.modal = {type:'pin'}; render(); ok(document.querySelectorAll('.pinpad .brick').length === 11, 'pin pad renders');
+  } catch (e){ ok(false, 'exception: ' + e.stack); }
+  const pre = document.createElement('pre'); pre.id = 'selftest'; pre.textContent = out.join('\n'); document.body.prepend(pre);
+  document.title = out.some(l=>l.startsWith('FAIL')) ? 'SELFTEST FAIL' : 'SELFTEST PASS';
+}
+
+boot().catch(e=>{ console.error(e); $('#app').innerHTML = `<div class="wrap" style="padding-top:40px"><h2>Something went wrong</h2><p>${esc(e.message)}</p></div>`; });
+</script>
+</body>
+</html>
