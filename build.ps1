@@ -12,7 +12,8 @@ $marker = '/*__WORD_LISTS__*/""'
 $tpl = Get-Content -LiteralPath $Template -Raw -Encoding UTF8
 if (-not $tpl.Contains($marker)) { throw "Marker $marker not found in $Template" }
 $txt = Get-Content -LiteralPath $WordList -Raw -Encoding UTF8
-$json = ConvertTo-Json -InputObject $txt -Compress
+$escaped = $txt.Replace('\','\\').Replace('"','\"').Replace("`r",'\r').Replace("`n",'\n').Replace("`t",'\t')
+$json = '"' + $escaped + '"'
 $html = $tpl.Replace($marker, $json)
 [IO.File]::WriteAllText($Out, $html, [Text.UTF8Encoding]::new($false))
 $count = ($txt -split "`r?`n" | Where-Object { $_.Trim() -and $_.Trim() -ne 'Word List Name' }).Count

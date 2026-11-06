@@ -43,6 +43,14 @@ The app is published at **https://dpaksrin.github.io/spellcoach/** from the publ
 2. Tap **Share > Add to Home Screen**. SpellCoach now opens like a normal app.
 3. Progress saves automatically on the iPad.
 
+## Syncing progress with JSONBin.io
+
+1. Create a JSONBin bin and make it public. SpellCoach does not store API credentials, so private bins are not supported.
+2. In SpellCoach, open **Parents > JSONBin.io sync**, paste the bin ID or its `https://api.jsonbin.io/v3/b/...` URL, and choose **Connect & sync**.
+3. Use the same bin ID on each device. SpellCoach saves changes automatically and checks for newer progress when it opens or returns to the foreground.
+
+Anyone who knows the public bin ID may be able to read or overwrite its contents. Do not use this option for sensitive data. If devices have different progress, the more recently saved progress is used and the other copy is kept in version history.
+
 ## Moving progress between the PC and the iPad
 
 Use one device at a time: finish on one, save, then open on the other.
