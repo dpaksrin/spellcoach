@@ -526,7 +526,9 @@ async function jsonBinRequest(method, doc){
   const id = parseJsonBinId(S.meta.jsonBinId);
   const options = {method};
   if (doc){ options.headers = {'Content-Type':'application/json'}; options.body = JSON.stringify(doc); }
-  const response = await fetch(`https://api.jsonbin.io/v3/b/${encodeURIComponent(id)}`, options);
+  const version = method === 'GET' ? '/latest' : '';
+  if (method === 'GET') options.cache = 'no-store';
+  const response = await fetch(`https://api.jsonbin.io/v3/b/${encodeURIComponent(id)}${version}`, options);
   let payload = null;
   try { payload = await response.json(); } catch {}
   if (!response.ok) throw new Error(payload && payload.message || `JSONBin returned HTTP ${response.status}.`);
