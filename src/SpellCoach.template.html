@@ -522,17 +522,34 @@ function parseJsonBinId(value){
   if (!/^[A-Za-z0-9_-]{1,128}$/.test(id)) throw new Error('That JSONBin bin ID is not valid.');
   return id;
 }
+function normalizeJsonBinDoc(raw){
+  const o = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  try { return {doc:normalizeDoc(o), recovered:false}; }
+  catch (e){
+    if (!o || !APP_IDS.includes(o.app) || !o.current || (o.schemaVersion||1) > SCHEMA_VERSION) throw e;
+    const versions = [];
+    for (const version of Array.isArray(o.versions) ? o.versions : []){
+      try { versions.push(normalizeData(version)); } catch {}
+    }
+    if (!versions.length) throw e;
+    return {doc:{app:'SpellCoach', schemaVersion:SCHEMA_VERSION, current:versions[0], versions:versions.slice(1, MAX_VERSIONS + 1)}, recovered:true};
+  }
+}
 async function jsonBinRequest(method, doc){
   const id = parseJsonBinId(S.meta.jsonBinId);
   const options = {method};
-  if (doc){ options.headers = {'Content-Type':'application/json'}; options.body = JSON.stringify(doc); }
+  if (doc){ options.headers = {'Content-Type':'application/json'}; options.body = JSON.stringify(normalizeDoc(doc)); }
   const version = method === 'GET' ? '/latest' : '';
   if (method === 'GET') options.cache = 'no-store';
   const response = await fetch(`https://api.jsonbin.io/v3/b/${encodeURIComponent(id)}${version}`, options);
   let payload = null;
   try { payload = await response.json(); } catch {}
   if (!response.ok) throw new Error(payload && payload.message || `JSONBin returned HTTP ${response.status}.`);
-  return method === 'GET' ? normalizeDoc(payload && payload.record || payload) : null;
+  const saved = payload && payload.record || payload;
+  if (method === 'GET') return normalizeJsonBinDoc(saved);
+  const confirmed = normalizeJsonBinDoc(saved).doc;
+  if (confirmed.current.savedAt !== doc.current.savedAt) throw new Error('JSONBin accepted the write but did not confirm the saved progress.');
+  return null;
 }
 function mergeJsonBinDocs(primary, secondary){
   const current = JSON.stringify(primary.current);
@@ -550,14 +567,15 @@ async function syncJsonBin(){
   if (!S.meta.jsonBinId) throw new Error('Connect a JSONBin bin first.');
   S.remoteSyncReady = false;
   try {
-    const remote = await jsonBinRequest('GET');
+    const remoteResult = await jsonBinRequest('GET');
+    const remote = remoteResult.doc;
     const local = S.doc;
     let primary;
     if (isFresh(remote) && !isFresh(local)) primary = local;
     else if (isFresh(local) && !isFresh(remote)) primary = remote;
     else primary = Date.parse(remote.current.savedAt) > Date.parse(local.current.savedAt) ? remote : local;
     const merged = mergeJsonBinDocs(primary, primary === remote ? local : remote);
-    const changed = JSON.stringify(merged) !== JSON.stringify(remote);
+    const changed = remoteResult.recovered || JSON.stringify(merged) !== JSON.stringify(remote);
     S.doc = merged;
     applyTheme(D().player);
     await kvSet('doc', JSON.stringify(S.doc));
@@ -566,6 +584,7 @@ async function syncJsonBin(){
     await kvSet('meta', S.meta);
     if (changed) await persist();
     if (S.meta.jsonBinError) throw new Error(S.meta.jsonBinError);
+    return remoteResult.recovered;
   } catch (e){
     S.remoteSyncReady = false;
     S.meta.jsonBinError = e.message;
@@ -1038,7 +1057,7 @@ function viewParents(st){
     <div class="card">
       <h2 style="font-size:22px">☁️ JSONBin.io sync</h2>
       <p class="muted" style="font-weight:700">Connect an existing public JSONBin bin to sync progress across devices. Use its bin ID or API URL. Anyone with the ID can read or change the data, so do not store sensitive information here.</p>
-      ${S.meta.jsonBinId ? `<div class="callout info">Connected to JSONBin bin <b>${esc(S.meta.jsonBinId)}</b>. New progress saves automatically; the bin is checked when the app opens or returns to the foreground.</div>` : ''}
+      ${S.meta.jsonBinId ? `<div class="callout ${S.remoteSyncReady?'info':'warn'}">${S.remoteSyncReady ? `Connected to JSONBin bin <b>${esc(S.meta.jsonBinId)}</b>. New progress saves automatically; the bin is checked when the app opens or returns to the foreground.` : `JSONBin bin <b>${esc(S.meta.jsonBinId)}</b> is configured, but sync is not currently working.`}</div>` : ''}
       ${S.meta.jsonBinError ? `<div class="callout warn">${esc(S.meta.jsonBinError)}</div>` : ''}
       <label class="field">Bin ID or URL<input id="jsonbin-id" type="text" value="${esc(S.meta.jsonBinId||'')}" autocomplete="off" placeholder="JSONBin bin ID or https://api.jsonbin.io/v3/b/..."></label>
       <div class="btnrow"><button class="brick sm" data-act="jsonBinConnect">Connect &amp; sync</button>
@@ -1202,13 +1221,16 @@ const ACT = {
       S.remoteSyncReady = false;
       delete S.meta.jsonBinError;
       await kvSet('meta', S.meta);
-      await syncJsonBin();
-      toast('JSONBin connected and synced');
+      const recovered = await syncJsonBin();
+      toast(recovered ? 'Recovered progress from an earlier JSONBin save and repaired the bin.' : 'JSONBin connected and synced');
     } catch (e){ console.error(e); toast(`Could not connect to JSONBin: ${e.message}`); }
     render();
   },
   async jsonBinSync(){
-    try { await syncJsonBin(); toast('JSONBin sync complete'); }
+    try {
+      const recovered = await syncJsonBin();
+      toast(recovered ? 'Recovered progress from an earlier JSONBin save and repaired the bin.' : 'JSONBin sync complete');
+    }
     catch (e){ console.error(e); toast(`JSONBin sync failed: ${e.message}`); }
     render();
   },
@@ -1310,7 +1332,7 @@ document.addEventListener('visibilitychange', async ()=>{
 });
 document.addEventListener('visibilitychange', async ()=>{
   if (document.visibilityState === 'visible' && S.meta.jsonBinId && !S.modal && !S.testMode){
-    try { await syncJsonBin(); }
+    try { if (await syncJsonBin()) toast('Recovered progress from an earlier JSONBin save and repaired the bin.'); }
     catch (e){ console.error(e); toast(`JSONBin sync failed: ${e.message}`); render(); }
   }
 });
@@ -1334,7 +1356,7 @@ async function boot(){
   if (S.dirStatus === 'granted'){ try { await syncFromFolder(); } catch (e){ console.error(e); } }
   else if (!raw && !S.meta.jsonBinId) await persist();
   if (S.meta.jsonBinId){
-    try { await syncJsonBin(); }
+    try { if (await syncJsonBin()) toast('Recovered progress from an earlier JSONBin save and repaired the bin.'); }
     catch (e){ console.error(e); toast(`JSONBin sync failed: ${e.message}`); render(); }
   } else S.remoteSyncReady = true;
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
@@ -1403,6 +1425,10 @@ async function selfTest(){
     ok(setStatus({studied:[], quizzes:[{date:'2026-01-01T15:00:00Z',score:60}]}) === 'studied', 'failed quiz = studied');
     const rt = normalizeDoc(JSON.stringify(S.doc));
     ok(rt.versions.length === S.doc.versions.length && rt.current.savedAt === D().savedAt && JSON.stringify(rt.current.sets) === JSON.stringify(D().sets), 'JSON round trip');
+    const brokenBin = clone(S.doc); brokenBin.current = {...brokenBin.current}; delete brokenBin.current.sets;
+    brokenBin.versions = [clone(D()), ...brokenBin.versions];
+    const recoveredBin = normalizeJsonBinDoc(brokenBin);
+    ok(recoveredBin.recovered && JSON.stringify(recoveredBin.doc.current.sets) === JSON.stringify(D().sets), 'JSONBin recovers a malformed latest version from history');
     ok(normalizeDoc({...clone(S.doc), app:'BrickQuest'}).app === 'SpellCoach', 'accepts save files from before the rename');
     let rej = false; try { normalizeDoc('{"x":1}'); } catch { rej = true; } ok(rej, 'rejects non-save file');
     rej = false; try { normalizeDoc(JSON.stringify({...S.doc, schemaVersion:99})); } catch { rej = true; } ok(rej, 'rejects newer schema');
