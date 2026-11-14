@@ -1,4 +1,13 @@
-Word List Name
+Word List Word List Name
+2027 Spelling Words_Set_01_2027-1B1
+2027 Spelling Words_Set_02_2027-1B2
+2027 Spelling Words_Set_03_2027-2B1
+2027 Spelling Words_Set_04_2027-2B2
+2027 Spelling Words_Set_05_2027-2B3
+2027 Spelling Words_Set_06_2027-2B4
+2027 Spelling Words_Set_07_2027-3B1
+2027 Spelling Words_Set_08_2027-3B2
+2027 Spelling Words_Set_09_2027 School
 2026 Spelling Words_Set_01_2026-1B1
 2026 Spelling Words_Set_02_2026-1B2
 2026 Spelling Words_Set_03_2026-2B1
