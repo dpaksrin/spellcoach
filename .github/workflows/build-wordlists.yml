@@ -8,6 +8,7 @@ on:
       - 'src/SpellCoach.template.html'
       - 'build.ps1'
       - '.github/workflows/build-wordlists.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
