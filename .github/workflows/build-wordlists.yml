@@ -1,0 +1,38 @@
+name: Build SpellCoach word lists
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Word List Name.txt'
+      - 'src/SpellCoach.template.html'
+      - 'build.ps1'
+      - '.github/workflows/build-wordlists.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build app with current word lists
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Commit generated app if changed
+        shell: pwsh
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SpellCoach.html
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m 'Build SpellCoach with updated word lists'
+            git push
+          }
