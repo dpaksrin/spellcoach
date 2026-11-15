@@ -16,5 +16,5 @@ $escaped = $txt.Replace('\','\\').Replace('"','\"').Replace("`r",'\r').Replace("
 $json = '"' + $escaped + '"'
 $html = $tpl.Replace($marker, $json)
 [IO.File]::WriteAllText($Out, $html, [Text.UTF8Encoding]::new($false))
-$count = ($txt -split "`r?`n" | Where-Object { $_.Trim() -and $_.Trim() -ne 'Word List Name' }).Count
+$count = ($txt -split "`r?`n" | Where-Object { $_.Trim() -and $_.Trim() -notmatch '^word list name$' -and $_.Trim() -notmatch '^word list word list name$' }).Count
 Write-Host "Built $Out with $count word lists."
